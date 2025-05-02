@@ -1,0 +1,103 @@
+{
+	"name": "Central-Ticket",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"serve": "vue-cli-service serve",
+		"build": "vue-cli-service build",
+		"lint": "vue-cli-service lint",
+		"dev": "vue-cli-service serve --mode dev",
+		"hmg": "vue-cli-service serve --mode hmg",
+		"prod": "vue-cli-service serve --mode prod"
+	},
+	"dependencies": {
+		"@chenfengyuan/vue-countdown": "^1.1.5",
+		"@fortawesome/fontawesome-svg-core": "^6.1.1",
+		"@fortawesome/free-solid-svg-icons": "^6.1.1",
+		"@fortawesome/vue-fontawesome": "^2.0.6",
+		"@types/vuelidate": "^0.7.15",
+		"apexcharts": "^4.5.0",
+		"autonumeric": "^4.6.0",
+		"autonumeric-vue": "^1.0.8",
+		"axios": "^0.25.0",
+		"binlookup": "^2.0.1",
+		"chart.js": "^3.9.1",
+		"core-js": "^3.6.5",
+		"element-ui": "^2.15.13",
+		"fortawesome": "0.0.1-security",
+		"jquery": "^3.7.1",
+		"jquery-resizable-dom": "^0.35.0",
+		"jw-vue-pagination": "^1.0.3",
+		"keycloak-js": "^18.0.0",
+		"lodash": "^4.17.21",
+		"mathjax": "^2.7.5",
+		"moment": "^2.29.3",
+		"owl.carousel": "^2.3.4",
+		"qs": "^6.11.1",
+		"sweetalert2": "^11.7.0",
+		"tiptap-extensions": "^1.35.2",
+		"tiptap-vuetify": "^2.24.0",
+		"util": "^0.12.4",
+		"v-mask": "^2.3.0",
+		"vue": "2.7.2",
+		"vue-apexcharts": "^1.6.2",
+		"vue-chartjs": "^4.1.1",
+		"vue-cookie": "^1.1.4",
+		"vue-date-fns": "^2.0.2",
+		"vue-fontawesome": "0.0.2",
+		"vue-frag": "^1.4.1",
+		"vue-icon": "^2.2.0",
+		"vue-js-modal": "^2.0.0-rc.6",
+		"vue-recaptcha": "^2.0.1",
+		"vue-router": "^3.2.0",
+		"vue-search-select": "^2.9.5",
+		"vue-sweetalert2": "^4.3.1",
+		"vue-the-mask": "^0.11.1",
+		"vue-trumbowyg": "^3.6.2",
+		"vue2-editor": "^2.10.3",
+		"vuedraggable": "^2.24.3",
+		"vuejs-logger": "^1.5.5",
+		"vuelidate": "^0.7.7",
+		"vuetify": "^2.4.0",
+		"vuetify-mask-with-slots": "~2.1.0",
+		"vuex": "^3.4.0"
+	},
+	"devDependencies": {
+		"@vue/cli-plugin-babel": "^5.0.8",
+		"@vue/cli-plugin-eslint": "~5.0.0",
+		"@vue/cli-plugin-router": "^5.0.8",
+		"@vue/cli-plugin-vuex": "^5.0.8",
+		"@vue/cli-service": "^5.0.8",
+		"@vue/eslint-config-airbnb": "^5.0.2",
+		"babel-eslint": "^10.1.0",
+		"eslint": "^7.15.8",
+		"eslint-plugin-import": "^2.20.2",
+		"eslint-plugin-vue": "~7.0.0",
+		"sass": "~1.32.12",
+		"sass-loader": "~10.0.0",
+		"vue-cli-plugin-vuetify": "^2.4.5",
+		"vue-template-compiler": "^2.6.11",
+		"vuetify-loader": "^1.7.0",
+		"webpack": "^5.76.2"
+	},
+	"eslintConfig": {
+		"root": true,
+		"env": {
+			"node": true
+		},
+		"extends": [
+			"plugin:vue/essential",
+			"eslint:recommended",
+			"@vue/airbnb"
+		],
+		"parserOptions": {
+			"parser": "babel-eslint"
+		},
+		"rules": {}
+	},
+	"browserslist": [
+		"> 1%",
+		"last 2 versions",
+		"not dead"
+	]
+}

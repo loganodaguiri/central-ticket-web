@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"moduleResolution": "node",
+		"baseUrl": ".",
+		"paths": {
+			"@/*": [
+				"./src/*"
+			]
+		}
+	},
+	"exclude": [
+		".vscode",
+		"node_modules",
+		"dist",
+		"public"
+	],
+	"include": [
+		"./src/*/"
+	],
+}
