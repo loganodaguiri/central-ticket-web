@@ -1,10 +1,10 @@
 <template>
 	<div class="wrapper">
 		<div>
-			<AppBar/>
+			<AppBar />
 		</div>
 
-		<!-- Event Banner -->
+		<!-- Banner -->
 		<div class="banner" :style="{ backgroundImage: 'url(' + require('@/assets/speaker-bg.png') + ')' }">
 			<div class="banner-content" v-bind:class="{'mx-auto':$vuetify.breakpoint.mdAndDown}">
 				<p class="banner-texto-grande" style="align-items: center;">
@@ -13,73 +13,46 @@
 			</div>
 		</div>
 
-		<div style="margin-top: 40px;">
-			<span style="font-size: 20px; font-family: 'POPPINS'; margin-left: 15px; color: #0a4941; font-weight: bold;">Forma de pagamento</span>
-		</div>
-
-		<v-row class="px-4" :style="formaPagamento == 'CARTAO_CREDITO' ? 'margin-bottom: 20px;' : 'margin-bottom: 60px;'">
-			<v-col cols="12">
-				<v-radio-group v-model="formaPagamento" row mandatory hide-details="auto">
-					<v-radio
-						label="Cartão de Crédito"
-						value="CARTAO_CREDITO"
-						style="font-family: 'Poppins'; font-weight: bolder; color: #0a4941;"
-						/>
-				</v-radio-group>
-			</v-col>
-		</v-row>
-
 		<!-- Cartão -->
-		<div style="margin: 20px !important;">
+		<div class="form-container">
 			<v-row>
-				<v-col cols="12" style="margin-bottom: -15px;">
-					<span style="font-size: 20px; font-family: 'POPPINS'; color: #0a4941; font-weight: bold;">
-						Insira abaixo os dados do cartão de crédito
-					</span>
-				</v-col>
-				<v-col
-					cols="12"
-					sm="6"
-					md="6"
-					lg="12"
-					xl="8"
-					rounded-lg>
-					<p style="color: #0a4941; font-weight: 600;margin-bottom: 5px;">Nome (Igual impresso no cartão)</p>
-					<v-text-field class="custom-file-input" v-model="dadosCartao.nome"/>
-				</v-col>
-				<v-col cols="12" sm="6" md="6" lg="12" xl="4">
-					<p style="color: #0a4941; font-weight: 600;margin-bottom: 5px;">CPF do titular</p>
-					<v-text-field class="custom-file-input" v-model="dadosCartao.cpf"/>
-				</v-col>
-				<v-col cols="12" sm="6" md="6" lg="8">
-					<p style="color: #0a4941; font-weight: 600;margin-bottom: 5px;">Número</p>
-					<v-text-field
-						class="custom-file-input"
-						v-model="numeroCartao"
-						@input="buscarBandeira(numeroCartao)"/>
-				</v-col>
-				<v-col cols="12" sm="6" md="6" lg="4">
-					<p style="color: #0a4941; font-weight: 600;margin-bottom: 5px;">CVV</p>
-					<v-text-field class="custom-file-input" v-model="dadosCartao.cvv"/>
+				<v-col cols="12">
+					<span class="form-section-title">Insira abaixo os dados do cartão de crédito</span>
 				</v-col>
 
-				<!-- Exibir a bandeira -->
+				<v-col cols="12" sm="6" md="6" lg="12" xl="8">
+					<p class="form-label">Nome (Igual impresso no cartão)</p>
+					<v-text-field class="custom-file-input" v-model="dadosCartao.nome" />
+				</v-col>
+
 				<v-col cols="12" sm="6" md="6" lg="12" xl="4">
-					<p style="color: #0a4941; font-weight: 600;margin-bottom: 5px;">Bandeira</p>
+					<p class="form-label">CPF do titular</p>
+					<v-text-field class="custom-file-input" v-model="dadosCartao.cpf" />
+				</v-col>
+
+				<v-col cols="12" sm="6" md="6" lg="8">
+					<p class="form-label">Número</p>
+					<v-text-field class="custom-file-input" v-model="numeroCartao" @input="buscarBandeira(numeroCartao)" />
+				</v-col>
+
+				<v-col cols="12" sm="6" md="6" lg="4">
+					<p class="form-label">CVV</p>
+					<v-text-field class="custom-file-input" v-model="dadosCartao.cvv" />
+				</v-col>
+
+				<v-col cols="12" sm="6" md="6" lg="12" xl="4">
+					<p class="form-label">Bandeira</p>
 					<v-select
 						v-model="dadosCartao.bandeira"
 						:items="['Visa', 'MasterCard', 'American Express', 'Elo', 'Hipercard']"
 						label="Selecione a bandeira do cartão"
 						dense
 						class="custom-file-input"
-						item-value="value"
-						item-text="text"
 						/>
 				</v-col>
 
-				<!-- Campo de validade -->
 				<v-col cols="12" sm="6" md="6" lg="12" xl="4">
-					<p style="color: #0a4941; font-weight: 600;margin-bottom: 5px;">Validade</p>
+					<p class="form-label">Validade</p>
 					<v-text-field
 						v-model="dadosCartao.validade"
 						class="custom-file-input"
@@ -92,39 +65,33 @@
 						/>
 				</v-col>
 
-				<!-- Campo de parcelamento -->
 				<v-col cols="12" sm="6" md="6" lg="12" xl="4">
-					<p style="color: #0a4941; font-weight: 600;margin-bottom: 5px;">Parcelar em até</p>
+					<p class="form-label">Parcelar em até</p>
 					<v-select
 						v-model="numeroParcelas"
 						:items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
 						label="Selecione o número de parcelas"
 						dense
 						class="custom-file-input"
-						item-value="value"
-						item-text="text"
 						/>
 				</v-col>
 			</v-row>
 		</div>
 
-		<!-- Enderço cobrança -->
-		<div style="margin: 20px !important;">
-			<span style="font-size: 20px; font-family: 'POPPINS'; color: #0a4941; font-weight: bold;">
-				Endereço de cobrança:
-			</span>
+		<!-- Endereço de cobrança -->
+		<div class="form-container">
+			<span class="form-section-title">Endereço de cobrança:</span>
 			<v-row>
-				<!-- CEP -->
 				<v-col cols="12" md="4">
 					<v-text-field
 						v-model="dadosCartao.endereco.cep"
 						label="CEP"
 						:rules="[v => !!v || 'Campo obrigatório']"
 						required
+						class="custom-file-input"
 						/>
 				</v-col>
 
-				<!-- Rua -->
 				<v-col cols="12" md="8">
 					<v-text-field
 						v-model="dadosCartao.endereco.logradouro"
@@ -132,75 +99,57 @@
 						:rules="[v => !!v || 'Campo obrigatório']"
 						required
 						disabled
+						class="custom-file-input"
 						/>
 				</v-col>
 
-				<!-- Número -->
 				<v-col cols="12" md="4">
 					<v-text-field
 						v-model="dadosCartao.endereco.numeroLogradouro"
 						label="Número"
+						class="custom-file-input"
 						/>
 				</v-col>
 
-				<!-- Bairro -->
 				<v-col cols="12" md="6">
 					<v-text-field
 						v-model="dadosCartao.endereco.bairro"
 						label="Bairro"
 						disabled
+						class="custom-file-input"
 						/>
 				</v-col>
 
-				<!-- Cidade -->
 				<v-col cols="12" md="4">
 					<v-text-field
 						v-model="dadosCartao.endereco.municipio"
 						label="Cidade"
 						disabled
+						class="custom-file-input"
 						/>
 				</v-col>
 
-				<!-- Estado -->
 				<v-col cols="12" md="2">
 					<v-text-field
 						v-model="dadosCartao.endereco.uf"
 						label="UF"
 						maxlength="2"
 						disabled
+						class="custom-file-input"
 						/>
 				</v-col>
 			</v-row>
 		</div>
 
 		<!-- Botão salvar -->
-		<div style="margin: 20px !important;">
+		<div class="form-container" style="text-align: center;">
 			<v-btn color="primary" @click="criarCompra">
 				Finalizar Compra
 			</v-btn>
 		</div>
 
-		<!-- rodape -->
-		<div
-			fluid
-			id="rodape">
-			<v-container>
-				<v-img
-					class="logo-rodape"
-					responsive
-					contain
-					height="100%"
-					max-width="185"
-					:src="LogoHorizontal" />
-				<div class="socials">
-					<v-icon @click="abrirLink('https://www.instagram.com/aprovei.bucomaxilo/?next=%2F')">mdi-instagram</v-icon>
-					<v-icon @click="abrirLink('https://www.facebook.com/profile.php?id=100077018277396')">mdi-facebook</v-icon>
-					<v-icon @click="abrirLink('https://wa.me/5511976684596')">mdi-whatsapp</v-icon>
-				</div>
-				<span>
-					Desenvolvido por Logan e Rafael
-				</span>
-			</v-container>
+		<div>
+			<Rodape />
 		</div>
 	</div>
 </template>
@@ -212,6 +161,7 @@
 	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 	import { buscaCep } from "@/services/ViaCepService.js";
 	import { criarCompra, finalizarCompra } from "@/services/ComprarService.js";
+	import Rodape from "@/components/Rodape.vue";
 	import { bucaUser } from "@/services/User.js";
 
 	export default {
@@ -219,6 +169,7 @@
 
 		components: {
 			AppBar,
+			Rodape,
 		},
 
 		data(){
@@ -418,7 +369,7 @@
     line-height: clamp(30px, 6vw, 55px); /* Responsivo para altura da linha */
     margin-bottom: 0;
     text-align: center; /* Centraliza o texto */
-    color: var(--cor-branca);
+    color: white;
 
     /* Se precisar alinhar dentro de um flex container */
     display: flex;
@@ -468,34 +419,48 @@
 		text-align: center;
 	}
 
-	#rodape::v-deep{
-		display:flex;
-		align-items:center;
-		background-color: #111429;
-		height:110px;
-		margin-top: 20px;
+	.form-container {
+		max-width: 1000px;
+		margin: auto;
+		padding: 20px;
+		border-radius: 10px;
+		background-color: #fff;
 	}
 
-	#rodape::v-deep .container{
-		display:flex;
-		justify-content:space-between;
-		align-items:center;
+	.custom-file-input input,
+	.custom-file-input label,
+	.custom-file-input .v-input__control,
+	.v-label,
+	.v-input__control {
+		color: black !important;
 	}
 
-	#rodape::v-deep .v-icon{
-		color:var(--cor-branca);
-		margin:0 10px;
-		font-size:33px;
+	.v-text-field,
+	.v-select {
+		border: 1px solid #ccc;
+		border-radius: 8px;
+		background-color: white;
 	}
 
-	#rodape::v-deep span{
-		color:var(--cor-branca);
-		font-family: Open Sans;
-		font-size: 14px;
-		font-weight: 400;
-		line-height: 20px;
-		letter-spacing: 0em;
-		text-align: left;
+	.form-section-title {
+		font-size: 20px;
+		font-family: 'Poppins';
+		color: black;
+		font-weight: bold;
+		margin-left: 15px;
+		margin-bottom: 10px;
+		display: block;
+		text-align: center;
 	}
 
+	.form-label {
+		color: black;
+		font-weight: 600;
+		margin-bottom: 5px;
+	}
+	.radio-label {
+		color: black !important;
+		font-family: 'Poppins';
+		font-weight: bold;
+	}
 </style>

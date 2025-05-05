@@ -8,7 +8,7 @@
 		<div class="banner" :style="{ backgroundImage: 'url(' + require('@/assets/speaker-bg.png') + ')' }">
 			<div class="banner-content" v-bind:class="{'mx-auto':$vuetify.breakpoint.mdAndDown}">
 				<v-icon color="white" class="mb-2" size="36">mdi mdi-microphone-variant</v-icon>
-				<p class="banner-texto-grande" style="align-items: center;">
+				<p class="banner-texto-grande" style="align-items: center; ">
 					<b>CENTRAL TICKET</b>
 				</p>
 				<p class="banner-texto-medio">
@@ -64,26 +64,8 @@
 			</v-container>
 		</div>
 
-		<div
-			fluid
-			id="rodape">
-			<v-container>
-				<v-img
-					class="logo-rodape"
-					responsive
-					contain
-					height="100%"
-					max-width="185"
-					:src="LogoHorizontal" />
-				<div class="socials">
-					<v-icon @click="abrirLink('https://www.instagram.com/aprovei.bucomaxilo/?next=%2F')">mdi-instagram</v-icon>
-					<v-icon @click="abrirLink('https://www.facebook.com/profile.php?id=100077018277396')">mdi-facebook</v-icon>
-					<v-icon @click="abrirLink('https://wa.me/5511976684596')">mdi-whatsapp</v-icon>
-				</div>
-				<span>
-					Desenvolvido por Logan e Rafael
-				</span>
-			</v-container>
+		<div>
+			<Rodape/>
 		</div>
 
 	</div>
@@ -95,6 +77,7 @@
 	import LogoHorizontal from "@/assets/logo-horizontal.png";
 	import DepoimentosNovosCarrossel from "@/components/landing/LandingPageFev2024/DepoimentosNovosCarrossel.vue";
 	import AppBar from "@/components/AppBar.vue";
+	import Rodape from "@/components/Rodape.vue";
 	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 	import { buscarEventos } from "@/services/EventoService.js";
 
@@ -103,6 +86,7 @@
 		components: {
 			DepoimentosNovosCarrossel,
 			AppBar,
+			Rodape,
 		},
 		created(){
 			this.tokenLogando = localStorage.getItem("authToken");
@@ -518,7 +502,7 @@
     line-height: clamp(30px, 6vw, 55px); /* Responsivo para altura da linha */
     margin-bottom: 0;
     text-align: center; /* Centraliza o texto */
-    color: var(--cor-branca);
+    color: white;
 
     /* Se precisar alinhar dentro de um flex container */
     display: flex;
@@ -536,7 +520,7 @@
     margin-top: 24px;
     margin-bottom: 0;
     text-align: center; /* Centraliza o texto */
-    color: var(--cor-branca);
+    color: white;
 	}
 
 	.banner-botao {
@@ -578,7 +562,7 @@
 		max-width:700px;
 		line-height: 42px;
 		text-transform:uppercase;
-		color: var(--cor-branca);
+		color: white;
 	}
 
 	#plano-gratis p.subtitulo {
@@ -592,7 +576,7 @@
     max-width: 700px;
     line-height: 28px;
     text-transform: none;
-    color: var(--cor-branca);
+    color: white;
 	}
 
 	#plano-gratis p.botao-acesso-plano-estagiario{
@@ -606,7 +590,7 @@
 		max-width:700px;
 		line-height: 32px;
 		text-transform:uppercase;
-		color: var(--cor-branca);
+		color: white;
 	}
 
 	#plano-gratis p.descricao{
@@ -672,35 +656,8 @@
 		text-align: justify;
 	}
 
-	>>>  .uppercase{
+	>>>.uppercase{
 		text-transform:uppercase;
-	}
-
-	#rodape::v-deep{
-		display:flex;
-		align-items:center;
-		background-color: #111429;
-		height:110px;
-	}
-
-	#rodape::v-deep .container{
-		display:flex;
-		justify-content:space-between;
-		align-items:center;
-	}
-	#rodape::v-deep .v-icon{
-		color:var(--cor-branca);
-		margin:0 10px;
-		font-size:33px;
-	}
-	#rodape::v-deep span{
-		color:var(--cor-branca);
-		font-family: Open Sans;
-		font-size: 14px;
-		font-weight: 400;
-		line-height: 20px;
-		letter-spacing: 0em;
-		text-align: left;
 	}
 
 	@media (max-width: 1500px){
@@ -729,7 +686,7 @@
 			max-width:700px;
 			line-height: 32px;
 			text-transform:uppercase;
-			color: var(--cor-branca);
+			color: white;
 			margin-top: 0px;
 			padding-right: 22px;
 			padding-left: 22px;
@@ -745,7 +702,7 @@
 			max-width:700px;
 			line-height: 32px;
 			text-transform:uppercase;
-			color: var(--cor-branca);
+			color: white;
 			padding-right: 26px;
 			padding-left: 26px;
 		}
@@ -784,7 +741,7 @@
 			font-size: 42px;
 			line-height: 55px;
 			margin-bottom: 0;
-			color: var(--cor-branca);
+			color: white;
 		}
 
 		.banner::v-deep .banner-texto-medio{
@@ -797,7 +754,7 @@
 			line-height: 34px;
 			margin-top: 10px;
 			margin-bottom:0;
-			color:var(--cor-branca);
+			color: white;
 		}
 
 		.banner-botao{
@@ -826,7 +783,7 @@
 			max-width:700px;
 			line-height: 32px;
 			text-transform:uppercase;
-			color: var(--cor-branca);
+			color: white;
 		}
 
 		.col-botao-plano-estagiario{
@@ -842,7 +799,7 @@
 		}
 
 		.texto-fino-estatistica{
-			color: var(--cor-branca);
+			color: white;
 			text-align: center;
 			font-family: Roboto;
 			font-size: 28px;

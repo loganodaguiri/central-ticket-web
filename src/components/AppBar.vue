@@ -239,6 +239,12 @@
 				if(item.titulo === "Sair"){
 					this.fazerLogout();
 				}
+				if(item.titulo === "Meu Perfil"){
+					this.$router.push("/meus-dados");
+				}
+				if(item.titulo === "Meus Ingressos"){
+					this.$router.push("/meus-ingressos");
+				}
 			},
 
 			fazerLogout(){

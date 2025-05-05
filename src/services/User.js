@@ -32,3 +32,14 @@ export const bucaUser = (id) => api.request({
 		Authorization: `Bearer ${token}`,
 	},
 });
+
+export const editUser = (userForm) => api.request({
+	method: "put",
+	baseURL: BASE_URL,
+	url: "/user/edit",
+	data: userForm,
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${token}`,
+	},
+});

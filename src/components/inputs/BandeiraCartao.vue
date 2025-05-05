@@ -45,9 +45,9 @@
 </template>
 
 <script>
+	import { exibirMensagemErro } from "@/util/MessageUtils.js";
 	import { emptyIfBlank, isBlank, isNotBlank } from "@/util/StringUtils.js";
 	import { extrairMensagemExibicao } from "@/util/RequestResponseUtils.js";
-	import { exibirMensagemErro } from "@/util/MessageUtils.js";
 	import { listarBandeiras } from "@/services/BandeiraCartaoService.js";
 
 	export default {

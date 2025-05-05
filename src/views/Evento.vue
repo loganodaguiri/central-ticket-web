@@ -35,46 +35,31 @@
 				<!-- Sobre o Evento -->
 				<div class="sobre-o-evento">
 					<h2>Sobre o Evento</h2>
-					<p>O maior festival de música eletrônica do Brasil está de volta em 2023 com uma lineup incrível!</p>
-
-					<h3>Lineup confirmada:</h3>
-					<ul>
-						<li>Martin Garrix</li>
-						<li>David Guetta</li>
-						<li>Alok</li>
-						<li>Charlotte de Witte</li>
-						<li>Chemical Surf</li>
-					</ul>
-
-					<h3>Estrutura do evento:</h3>
-					<ul>
-						<li>3 palcos temáticos</li>
-						<li>Área VIP com open bar</li>
-						<li>Food trucks com gastronomia variada</li>
-						<li>Área de descanso</li>
-					</ul>
+					<div v-html="evento.description"/>
 				</div>
 
 				<!-- Localização -->
 				<div class="sobre-o-evento">
 					<h2>Localização</h2>
-					<ul>
-						<li>Entrada permitida apenas com documento com foto</li>
-						<li>Proibido entrar com bebidas</li>
-						<li>Menores de idade só com responsáveis legais</li>
-						<li>Segurança 24h no local</li>
-					</ul>
+					<p>
+						{{ `${evento.house.address}, ${evento.house.number} - ${evento.house.city}, ${evento.house.state}` }}
+					</p>
+					<iframe
+						v-if="latitude && longitude"
+						width="100%"
+						height="300"
+						frameborder="0"
+						scrolling="no"
+						marginheight="0"
+						marginwidth="0"
+						:src="`https://www.openstreetmap.org/export/embed.html?bbox=${longitude - 0.01},${latitude - 0.01},${longitude + 0.01},${latitude + 0.01}&layer=mapnik&marker=${latitude},${longitude}`"/>
 				</div>
 
 				<!-- Localização -->
 				<div class="sobre-o-evento">
-					<h2>Localização</h2>
-					<ul>
-						<li>Entrada permitida apenas com documento com foto</li>
-						<li>Proibido entrar com bebidas</li>
-						<li>Menores de idade só com responsáveis legais</li>
-						<li>Segurança 24h no local</li>
-					</ul>
+					<h2>Produtor</h2>
+					{{ evento.producer.name }}
+					<div v-html="evento.producer.description"/>
 				</div>
 
 			</div>
@@ -115,27 +100,8 @@
 			</div>
 		</div>
 
-		<!-- rodape -->
-		<div
-			fluid
-			id="rodape">
-			<v-container>
-				<v-img
-					class="logo-rodape"
-					responsive
-					contain
-					height="100%"
-					max-width="185"
-					:src="LogoHorizontal" />
-				<div class="socials">
-					<v-icon @click="abrirLink('https://www.instagram.com/aprovei.bucomaxilo/?next=%2F')">mdi-instagram</v-icon>
-					<v-icon @click="abrirLink('https://www.facebook.com/profile.php?id=100077018277396')">mdi-facebook</v-icon>
-					<v-icon @click="abrirLink('https://wa.me/5511976684596')">mdi-whatsapp</v-icon>
-				</div>
-				<span>
-					Desenvolvido por Logan e Rafael
-				</span>
-			</v-container>
+		<div style="margin-top: 20px;">
+			<Rodape/>
 		</div>
 	</div>
 </template>
@@ -146,6 +112,7 @@
 	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 	import AppBar from "@/components/AppBar.vue";
 	import { buscarEventoById } from "@/services/EventoService.js";
+	import Rodape from "@/components/Rodape.vue";
 	import { buscaIngresoByIdEvento } from "@/services/IngressoService.js";
 
 	export default {
@@ -153,6 +120,7 @@
 
 		components: {
 			AppBar,
+			Rodape,
 		},
 
 		data(){
@@ -166,7 +134,10 @@
 				min: 1,
 				max: 5,
 				ingressos: [],
+				evento: {},
 				tokenLogando: null,
+				latitude: null,
+				longitude: null,
 			};
 		},
 
@@ -189,7 +160,7 @@
 			buscarDadosEvento(){
 				this.$carregando();
 				buscarEventoById(this.$route.params.id)
-					.then((res) => {
+					.then(async(res) => {
 						this.eventTitle = res.data.name;
 						const data = new Date(res.data.dateStart);
 						this.eventoData = new Intl.DateTimeFormat("pt-BR", {
@@ -199,7 +170,19 @@
 						}).format(data);
 						this.eventoPeriodo = `${res.data.startTime.slice(0, 5)} - ${res.data.endTime.slice(0, 5)}`;
 						this.eventoLocal = `${res.data.house.name}, ${res.data.house.city} - ${res.data.house.state}`;
-					}).catch((error) => {
+						this.evento = res.data;
+
+						// Obter coordenadas usando Nominatim
+						const endereco = `${res.data.house.address}, ${res.data.house.number} - ${res.data.house.city}, ${res.data.house.state}`;
+						const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(endereco)}&format=json`);
+						const resultado = await response.json();
+
+						if(resultado.length > 0){
+							this.latitude = parseFloat(resultado[0].lat);
+							this.longitude = parseFloat(resultado[0].lon);
+						}
+					})
+					.catch(() => {
 						exibirMensagemErroApi("Erro ao buscar evento.");
 					})
 					.finally(() => {
@@ -306,7 +289,7 @@
     line-height: clamp(30px, 6vw, 55px); /* Responsivo para altura da linha */
     margin-bottom: 0;
     text-align: center; /* Centraliza o texto */
-    color: var(--cor-branca);
+    color: white;
 
     /* Se precisar alinhar dentro de um flex container */
     display: flex;
@@ -324,7 +307,7 @@
     margin-top: 24px;
     margin-bottom: 0;
     text-align: center; /* Centraliza o texto */
-    color: var(--cor-branca);
+    color: white;
 	}
 
 	.banner::v-deep .banner-texto-pequeno {
@@ -336,7 +319,7 @@
     margin-top: 24px;
     margin-bottom: 0;
     text-align: center;
-    color: var(--cor-branca);
+    color: white;
 	}
 
 	.banner-botao {

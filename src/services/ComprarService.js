@@ -24,3 +24,13 @@ export const finalizarCompra = (compraFormulario, id) => api.request({
 		Authorization: `Bearer ${token}`,
 	},
 });
+
+export const buscarIngressosByUser = (usuario_id) => api.request({
+	method: "get",
+	baseURL: BASE_URL,
+	url: `ingresso/list/ingressos?usuario_id=${usuario_id}`,
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${token}`,
+	},
+});

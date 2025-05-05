@@ -287,10 +287,12 @@
 									Salvar Evento
 								</v-btn>
 							</v-card>
-
 						</v-col>
 					</v-row>
 				</v-container>
+			</div>
+			<div>
+				<Rodape/>
 			</div>
 		</div>
 
@@ -443,6 +445,7 @@
 	import { cadastroProdutor } from "@/services/ProdutorService.js";
 	import { cadastroEvento } from "@/services/EventoService.js";
 	import { VueEditor } from "vue2-editor";
+	import Rodape from "@/components/Rodape.vue";
 	import { cadastroIngrsso } from "@/services/IngressoService.js";
 	import AppBar from "@/components/AppBar.vue";
 
@@ -452,6 +455,7 @@
 		components: {
 			VueEditor,
 			AppBar,
+			Rodape,
 		},
 
 		data(){
@@ -749,7 +753,7 @@
     line-height: clamp(30px, 6vw, 55px); /* Responsivo para altura da linha */
     margin-bottom: 0;
     text-align: center; /* Centraliza o texto */
-    color: var(--cor-branca);
+    color: white;
 
     /* Se precisar alinhar dentro de um flex container */
     display: flex;

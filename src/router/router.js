@@ -5,6 +5,8 @@ import Contato from "@/views/Contato.vue";
 import CadastroEvento from "@/views/CadastroEvento.vue";
 import Evento from "@/views/Evento.vue";
 import Compra from "@/views/Compra.vue";
+import MeusDados from "@/views/MeuDados.vue";
+import MeusIngressos from "@/views/MeusIngressos.vue";
 
 Vue.use(VueRouter);
 
@@ -23,6 +25,12 @@ const routes = [
 	},
 	{
 		path: "/compra", name: "Evento", component: Compra, alias: "/", meta: { isAuthenticated: false },
+	},
+	{
+		path: "/meus-dados", name: "MeusDados", component: MeusDados, alias: "/", meta: { isAuthenticated: false },
+	},
+	{
+		path: "/meus-ingressos", name: "MeusIngressos", component: MeusIngressos, alias: "/", meta: { isAuthenticated: false },
 	},
 ];
 

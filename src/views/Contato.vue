@@ -62,6 +62,9 @@
 					</v-row>
 				</v-container>
 			</div>
+			<div>
+				<Rodape/>
+			</div>
 		</div>
 	</div>
 </template>
@@ -71,6 +74,7 @@
 	import LogoHorizontal from "@/assets/logo-horizontal.png";
 	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 	import { enviarEmail } from "@/services/ContatoService.js";
+	import Rodape from "@/components/Rodape.vue";
 	import AppBar from "@/components/AppBar.vue";
 
 	export default {
@@ -78,6 +82,7 @@
 
 		components: {
 			AppBar,
+			Rodape,
 		},
 
 		data(){
@@ -188,7 +193,7 @@
     line-height: clamp(30px, 6vw, 55px); /* Responsivo para altura da linha */
     margin-bottom: 0;
     text-align: center; /* Centraliza o texto */
-    color: var(--cor-branca);
+    color: white;
 
     /* Se precisar alinhar dentro de um flex container */
     display: flex;
