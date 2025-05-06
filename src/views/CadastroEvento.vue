@@ -43,16 +43,6 @@
 												/>
 										</v-col>
 
-										<!-- Classificação -->
-										<v-col cols="12">
-											<v-select
-												v-model="classificacao"
-												:items="['Livre', '10+', '12+', '14+', '16+', '18+']"
-												label="Classifique seu evento"
-												required
-												/>
-										</v-col>
-
 										<!-- Categoria -->
 										<v-col cols="12">
 											<v-text-field
@@ -300,7 +290,7 @@
 
 							<!-- Botão para continuar (ou salvar) -->
 							<v-card class="pa-4 text-center" elevation="2" rounded="xl">
-								<v-btn color="primary" @click="salvarEvento">
+								<v-btn color="primary" @click="salvarEvento" :disabled="!responsabilidadeConcordada">
 									Salvar Evento
 								</v-btn>
 							</v-card>
@@ -353,15 +343,16 @@
 										/>
 								</v-col>
 
-								<v-col cols="12">
+								<!-- Checkbox só aparece se for novo ingresso -->
+								<v-col cols="12" v-if="!formIngressoPago.ingresso_id">
 									<v-checkbox
 										label="Criar meia-entrada para este ingresso"
 										v-model="formIngressoPago.meiaEntrada"
 										/>
 								</v-col>
 
-								<!-- Campo extra só se meia-entrada estiver true -->
-								<v-col cols="12" md="6" v-if="formIngressoPago.meiaEntrada">
+								<!-- Campo extra só se meia-entrada estiver true e for novo ingresso -->
+								<v-col cols="12" md="6" v-if="!formIngressoPago.ingresso_id && formIngressoPago.meiaEntrada">
 									<v-text-field
 										label="Quantidade de meia-entrada *"
 										v-model="formIngressoPago.quantidadeMeiaEntrada"
@@ -379,6 +370,7 @@
 										required
 										/>
 								</v-col>
+
 								<v-col cols="12" md="3">
 									<v-text-field
 										label="Hora de Início *"
@@ -387,6 +379,7 @@
 										required
 										/>
 								</v-col>
+
 								<v-col cols="12" md="3">
 									<v-text-field
 										label="Data de Término das Vendas *"
@@ -395,6 +388,7 @@
 										required
 										/>
 								</v-col>
+
 								<v-col cols="12" md="3">
 									<v-text-field
 										label="Hora de Término *"
@@ -412,21 +406,13 @@
 										required
 										/>
 								</v-col>
+
 								<v-col cols="12" md="6">
 									<v-text-field
 										label="Quantidade máxima por compra *"
 										v-model="formIngressoPago.maxima"
 										type="number"
 										required
-										/>
-								</v-col>
-
-								<v-col cols="12">
-									<v-textarea
-										label="Descrição do Ingresso (opcional)"
-										v-model="formIngressoPago.descricao"
-										counter="100"
-										auto-grow
 										/>
 								</v-col>
 
@@ -445,7 +431,7 @@
 
 				<v-card-actions>
 					<v-spacer />
-					<v-btn text @click="showModalIngresso = false">CANCELAR</v-btn>
+					<v-btn text @click="fecharModalIngresso()">CANCELAR</v-btn>
 					<v-btn color="orange" dark @click="salvarIngressos()">SALVAR INGRESSO</v-btn>
 				</v-card-actions>
 			</v-card>
@@ -465,6 +451,7 @@
 	import Rodape from "@/components/Rodape.vue";
 	import { cadastroIngrsso, buscaIngresoByIdEvento, editarIngresso } from "@/services/IngressoService.js";
 	import AppBar from "@/components/AppBar.vue";
+	import { faL } from "@fortawesome/free-solid-svg-icons";
 
 	export default {
 		name: "CdastroEvento",
@@ -528,6 +515,7 @@
 				evento_id: null,
 				indiceEdicaoIngresso: null,
 				modalModoEdicao: false,
+				responsabilidadeConcordada: false,
 			};
 		},
 
@@ -654,6 +642,11 @@
 				this.showModalIngresso = true;
 			},
 
+			fecharModalIngresso(){
+				this.resetarFormulario();
+				this.showModalIngresso = false;
+			},
+
 			salvarEvento(){
 				this.$carregando();
 
@@ -778,7 +771,7 @@
 					quantidade: 0,
 					valor: 0,
 					meiaEntrada: false,
-					quantidadeMeiaEntrada: null,
+					quantidadeMeiaEntrada: false,
 					dataInicio: "",
 					horaInicio: "",
 					dataFim: "",
