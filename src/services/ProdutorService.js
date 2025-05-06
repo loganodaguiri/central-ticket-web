@@ -13,3 +13,14 @@ export const cadastroProdutor = (produtorForm) => api.request({
 		Authorization: `Bearer ${token}`,
 	},
 });
+
+export const edicaoProdutor = (produtorForm) => api.request({
+	method: "post",
+	baseURL: BASE_URL,
+	url: "/produtor/edit",
+	data: produtorForm,
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${token}`,
+	},
+});

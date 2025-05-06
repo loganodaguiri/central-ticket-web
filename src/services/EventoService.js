@@ -24,3 +24,37 @@ export const buscarEventoById = (id) => api.request({
 	baseURL: BASE_URL,
 	url: `event/event/${id}`,
 });
+
+export const buscarEventoByIdUser = (id) => api.request({
+	method: "get",
+	baseURL: BASE_URL,
+	url: `event/eventUser/${id}`,
+	headers: {
+		Authorization: `Bearer ${token}`,
+	},
+});
+
+export const apagarEvento = (id) => api.request({
+	method: "delete",
+	baseURL: BASE_URL,
+	url: `event/delete/${id}`,
+	headers: {
+		Authorization: `Bearer ${token}`,
+	},
+});
+
+export const editarEvento = (eventoForm) => api.request({
+	method: "put",
+	baseURL: BASE_URL,
+	url: "event/edit",
+	data: eventoForm,
+	headers: {
+		Authorization: `Bearer ${token}`,
+	},
+});
+
+export const buscarEventosDestaque = (id) => api.request({
+	method: "get",
+	baseURL: BASE_URL,
+	url: "event/eventDestaque",
+});

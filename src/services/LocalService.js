@@ -13,3 +13,14 @@ export const cadastroLocal = (localForm) => api.request({
 		Authorization: `Bearer ${token}`,
 	},
 });
+
+export const editarLocal = (localForm) => api.request({
+	method: "put",
+	baseURL: BASE_URL,
+	url: "/house/edit",
+	data: localForm,
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${token}`,
+	},
+});

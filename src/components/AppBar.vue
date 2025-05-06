@@ -245,6 +245,9 @@
 				if(item.titulo === "Meus Ingressos"){
 					this.$router.push("/meus-ingressos");
 				}
+				if(item.titulo === "Meus Eventos"){
+					this.$router.push("/meus-eventos");
+				}
 			},
 
 			fazerLogout(){

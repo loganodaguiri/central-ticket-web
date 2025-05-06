@@ -255,11 +255,28 @@
 
 								<!-- Lista de ingressos -->
 								<v-list two-line>
-									<v-list-item v-for="(ingresso, index) in ingressos" :key="index">
+									<v-list-item
+										v-for="(ingresso, index) in ingressos"
+										:key="index"
+										>
 										<v-list-item-content>
 											<v-list-item-title>{{ ingresso.titulo }}</v-list-item-title>
-											<v-list-item-subtitle>Quantidade: {{ ingresso.quantidade }} - Valor: R$ {{ ingresso.valor }}</v-list-item-subtitle>
+											<v-list-item-subtitle>
+												Quantidade: {{ ingresso.quantidade }} - Valor: R$ {{ ingresso.valor }}
+											</v-list-item-subtitle>
 										</v-list-item-content>
+
+										<!-- Botões de ação -->
+										<v-list-item-action>
+											<div class="d-flex">
+												<v-btn icon @click="showEditarIngresso(index)">
+													<v-icon>mdi-pencil</v-icon>
+												</v-btn>
+												<v-btn icon color="red" @click="excluirIngresso(index)">
+													<v-icon>mdi-delete</v-icon>
+												</v-btn>
+											</div>
+										</v-list-item-action>
 									</v-list-item>
 								</v-list>
 							</v-card>
@@ -429,7 +446,7 @@
 				<v-card-actions>
 					<v-spacer />
 					<v-btn text @click="showModalIngresso = false">CANCELAR</v-btn>
-					<v-btn color="orange" dark @click="criarIngresso()">CRIAR INGRESSO</v-btn>
+					<v-btn color="orange" dark @click="salvarIngressos()">SALVAR INGRESSO</v-btn>
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
@@ -441,12 +458,12 @@
 	import LogoHorizontal from "@/assets/logo-horizontal.png";
 	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 	import { buscaCep } from "@/services/ViaCepService.js";
-	import { cadastroLocal } from "@/services/LocalService.js";
-	import { cadastroProdutor } from "@/services/ProdutorService.js";
-	import { cadastroEvento } from "@/services/EventoService.js";
+	import { cadastroLocal, editarLocal } from "@/services/LocalService.js";
+	import { cadastroProdutor, edicaoProdutor } from "@/services/ProdutorService.js";
+	import { cadastroEvento, buscarEventoById, editarEvento } from "@/services/EventoService.js";
 	import { VueEditor } from "vue2-editor";
 	import Rodape from "@/components/Rodape.vue";
-	import { cadastroIngrsso } from "@/services/IngressoService.js";
+	import { cadastroIngrsso, buscaIngresoByIdEvento, editarIngresso } from "@/services/IngressoService.js";
 	import AppBar from "@/components/AppBar.vue";
 
 	export default {
@@ -509,7 +526,15 @@
 				nomeLocal: "",
 				localId: null,
 				evento_id: null,
+				indiceEdicaoIngresso: null,
+				modalModoEdicao: false,
 			};
+		},
+
+		computed: {
+			isEditar(){
+				return this.$route.params?.id;
+			},
 		},
 
 		watch: {
@@ -521,7 +546,94 @@
 				}
 			},
 		},
+
+		created(){
+			if(this.isEditar != null){
+				this.evento_id = this.isEditar;
+				this.buscarEventoById();
+				this.buscarIngressosByIdEvento();
+			}
+		},
+
 		methods: {
+			buscarEventoById(){
+				this.$carregando();
+				buscarEventoById(this.isEditar)
+					.then((res) => {
+						this.nomeEvento = res.data.name;
+						this.categoria = res.data.name;
+						this.dataInicio = res.data.dateStart;
+						this.dataTermino = res.data.dateEnd;
+						this.horaInicio = res.data.startTime;
+						this.horaTermino = res.data.endTime;
+						this.descricao = res.data.description;
+						this.nomeLocal = res.data.house.name;
+						this.cep = res.data.house.zip_code;
+						this.numero = res.data.house.number;
+						this.complemento = res.data.house.complemento;
+						this.nomeProdutor = res.data.producer.name;
+						this.descricaoProdutor = res.data.producer.description;
+						this.localId = res.data.house.house_id;
+						this.produtorId = res.data.producer.produtor_id;
+					}).catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar evento.");
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			buscarIngressosByIdEvento(){
+				this.$carregando();
+				buscaIngresoByIdEvento(this.isEditar)
+					.then((res) => {
+						this.ingressos = res.data.map((ingresso) => ({
+							ingresso_id: ingresso.ingresso_id,
+							titulo: ingresso.titulo,
+							quantidade: ingresso.quantidade_total,
+							valor: ingresso.valor,
+							meiaEntrada: ingresso.meia_entrada,
+							dataInicio: ingresso.data_inicio_vendas,
+							horaInicio: ingresso.hora_inicio_vendas,
+							dataFim: ingresso.data_termino_vendas,
+							horaFim: ingresso.hora_termino_vendas,
+							minima: ingresso.quantidade_minima_por_compra,
+							maxima: ingresso.quantidade_maxima_por_compra,
+							descricao: ingresso.descricao,
+						}));
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar ingressos.");
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			showEditarIngresso(index){
+				const ingresso = this.ingressos[index];
+
+				this.formIngressoPago = {
+					ingresso_id: ingresso.ingresso_id,
+					titulo: ingresso.titulo,
+					quantidade: ingresso.quantidade,
+					valor: ingresso.valor,
+					meiaEntrada: ingresso.meiaEntrada || false,
+					quantidadeMeiaEntrada: ingresso.quantidadeMeiaEntrada || null,
+					dataInicio: ingresso.dataInicio,
+					horaInicio: ingresso.horaInicio,
+					dataFim: ingresso.dataFim,
+					horaFim: ingresso.horaFim,
+					minima: ingresso.minima,
+					maxima: ingresso.maxima,
+					descricao: ingresso.descricao || "",
+				};
+
+				this.indiceEdicaoIngresso = index;
+				this.modalModoEdicao = true; // ESSA LINHA É ESSENCIAL
+				this.showModalIngresso = true;
+			},
+
 			async buscarEndereco(){
 				this.$carregando();
 				buscaCep(this.cep)
@@ -544,6 +656,7 @@
 
 			salvarEvento(){
 				this.$carregando();
+
 				const localForm = {
 					name: this.nomeLocal,
 					address: this.rua,
@@ -554,12 +667,20 @@
 					number: this.numero,
 					complemento: this.complemento,
 				};
-				cadastroLocal(localForm)
+
+				const acao = this.localId == null
+					? cadastroLocal(localForm)
+					: editarLocal({ ...localForm, house_id: this.localId });
+
+				acao
 					.then((res) => {
-						this.localId = res.data.newLocal.house_id;
-						this.salvarProdutor();
-					}).catch((error) => {
-						exibirMensagemErroApi("Erro cadastrar local.");
+						if(this.localId == null){
+							this.localId = res.data.newLocal.house_id;
+						}
+						return this.salvarProdutor();
+					})
+					.catch(() => {
+						exibirMensagemErroApi("Erro ao salvar local.");
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -575,9 +696,12 @@
 					usuario_id: localStorage.getItem("authuserId"),
 				};
 
-				cadastroProdutor(produtorForm)
+				const acao = this.produtorId == null
+					? cadastroProdutor(produtorForm)
+					: edicaoProdutor({ ...produtorForm, produtor_id: this.produtorId });
+
+				acao
 					.then((res) => {
-						console.log(res.data);
 						this.produtorId = res.data.produtor_id;
 						this.salvarEvento2();
 					})
@@ -593,28 +717,35 @@
 			salvarEvento2(){
 				this.$carregando();
 
-				console.log(this.imagemDivulgacao);
-
 				const eventoForm = new FormData();
-				eventoForm.append("name", this.nomeEvento); // Nome do evento
-				eventoForm.append("description", this.descricao); // Descrição do evento
-				eventoForm.append("startTime", this.horaInicio); // Hora de início do evento
-				eventoForm.append("endTime", this.horaTermino); // Hora de término do evento
-				eventoForm.append("dateStart", this.dataInicio); // Data de início do evento
-				eventoForm.append("dateEnd", this.dataTermino); // Data de término do evento
-				eventoForm.append("category", this.categoria); // Categoria do evento
-				eventoForm.append("subject", "teste"); // Assunto do evento
-				eventoForm.append("house_id", this.localId); // ID do local do evento
-				eventoForm.append("produtor_id", this.produtorId); // ID do produtor ou organizador do evento
+				eventoForm.append("name", this.nomeEvento);
+				eventoForm.append("description", this.descricao);
+				eventoForm.append("startTime", this.horaInicio);
+				eventoForm.append("endTime", this.horaTermino);
+				eventoForm.append("dateStart", this.dataInicio);
+				eventoForm.append("dateEnd", this.dataTermino);
+				eventoForm.append("category", this.categoria);
+				eventoForm.append("subject", "teste");
+				eventoForm.append("house_id", this.localId);
+				eventoForm.append("produtor_id", this.produtorId);
 
-				// Se houver uma imagem, adiciona ao FormData
+				// Adiciona imagem se houver
 				if(this.imagemDivulgacao){
 					eventoForm.append("photos", this.imagemDivulgacao);
 				}
 
-				cadastroEvento(eventoForm)
+				// Adiciona o ID do evento no próprio FormData
+				if(this.evento_id != null){
+					eventoForm.append("evento_id", this.evento_id);
+				}
+
+				const acao = this.evento_id == null
+					? cadastroEvento(eventoForm)
+					: editarEvento(eventoForm); // ← passa direto o FormData aqui
+
+				acao
 					.then((res) => {
-						this.evento_id = res.data.newEvent.evento_id;
+						this.evento_id = res.data.newEvent?.evento_id ?? this.evento_id;
 						this.salvarIngresso();
 					})
 					.catch((error) => {
@@ -626,34 +757,69 @@
 					});
 			},
 
-			criarIngresso(){
-				this.ingressos.push({ ...this.formIngressoPago });
-				console.log(this.ingressos);
+			salvarIngressos(){
+				if(this.modalModoEdicao && this.indiceEdicaoIngresso !== null){
+					// Edição: atualiza o ingresso no índice correspondente
+					this.ingressos.splice(this.indiceEdicaoIngresso, 1, { ...this.formIngressoPago });
+				}
+				else{
+					// Criação: adiciona novo ingresso
+					this.ingressos.push({ ...this.formIngressoPago });
+				}
+
 				this.showModalIngresso = false;
 				this.resetarFormulario();
+				console.log(this.ingressos);
 			},
 
 			resetarFormulario(){
 				this.formIngressoPago = {
 					titulo: "",
-					quantidade: "",
-					valor: "",
+					quantidade: 0,
+					valor: 0,
 					meiaEntrada: false,
+					quantidadeMeiaEntrada: null,
 					dataInicio: "",
 					horaInicio: "",
 					dataFim: "",
 					horaFim: "",
+					minima: 1,
+					maxima: 5,
 					descricao: "",
-					isVisible: false,
 				};
+				this.modalModoEdicao = false;
+				this.indiceEdicaoIngresso = null;
 			},
 
 			salvarIngresso(){
 				this.$carregando();
 
-				const ingressoForm = {
-					evento_id: this.evento_id,
-					tickets: this.ingressos.map((ingresso) => ({
+				// Arrays para armazenar ingressos de criação e edição
+				const ingressosCriacao = [];
+				const ingressosEdicao = [];
+
+				// Preenche os arrays de criação e edição
+				this.ingressos.forEach((ingresso) => {
+					const ingressoDataRegister = {
+						evento_id: this.evento_id,
+						tickets: [{
+							titulo: ingresso.titulo,
+							quantidade_total: ingresso.quantidade,
+							valor: ingresso.valor,
+							periodo_vendas_tipo: "Por Data",
+							data_inicio_vendas: ingresso.dataInicio,
+							hora_inicio_vendas: ingresso.horaInicio,
+							data_termino_vendas: ingresso.dataFim,
+							hora_termino_vendas: ingresso.horaFim,
+							quantidade_minima_por_compra: ingresso.minima,
+							quantidade_maxima_por_compra: ingresso.maxima,
+							meia_entrada: ingresso.meiaEntrada || false,
+							quantidade_meia_entrada: ingresso.quantidadeMeiaEntrada || 0,
+						}],
+					};
+
+					const ingressoDataEdit = {
+						evento_id: this.evento_id,
 						titulo: ingresso.titulo,
 						quantidade_total: ingresso.quantidade,
 						valor: ingresso.valor,
@@ -666,20 +832,49 @@
 						quantidade_maxima_por_compra: ingresso.maxima,
 						meia_entrada: ingresso.meiaEntrada || false,
 						quantidade_meia_entrada: ingresso.quantidadeMeiaEntrada || 0,
-					})),
-				};
+					};
 
-				cadastroIngrsso(ingressoForm)
-					.then((res) => {
-						exibirMensagemSucesso("Evento e cadastrados com sucesso!", res);
-					})
-					.catch((error) => {
-						exibirMensagemErroApi("Erro ao cadastrar ingresso.");
-						console.error(error);
-					})
-					.finally(() => {
-						this.$finalizarCarregando();
-					});
+					if(ingresso.ingresso_id){
+						// Se ingresso_id existe, adiciona ao array de edição
+						ingressoDataEdit.ingresso_id = ingresso.ingresso_id;
+						ingressosEdicao.push(ingressoDataEdit);
+					}
+					else{
+						// Caso contrário, adiciona ao array de criação
+						ingressosCriacao.push(ingressoDataRegister);
+					}
+				});
+
+				// Verificando os arrays de criação e edição
+				console.log("Ingressos para criação:", ingressosCriacao);
+				console.log("Ingressos para edição:", ingressosEdicao);
+
+				// Enviar ingressos para criação
+				if(ingressosCriacao.length > 0){
+					Promise.all(ingressosCriacao.map((ingresso) => cadastroIngrsso(ingresso)))
+						.then((res) => {
+							exibirMensagemSucesso("Evento e ingressos cadastrados com sucesso!", res);
+						})
+						.catch((error) => {
+							exibirMensagemErroApi("Erro ao cadastrar ingresso.");
+							console.error(error);
+						});
+				}
+
+				// Enviar ingressos para edição
+				if(ingressosEdicao.length > 0){
+					Promise.all(ingressosEdicao.map((ingresso) => editarIngresso(ingresso)))
+						.then((res) => {
+							exibirMensagemSucesso("Evento e ingressos atualizados com sucesso!", res);
+						})
+						.catch((error) => {
+							exibirMensagemErroApi("Erro ao atualizar ingresso.");
+							console.error(error);
+						});
+				}
+
+				// Finaliza o carregamento depois de todos os processos
+				this.$finalizarCarregando();
 			},
 		},
 	};

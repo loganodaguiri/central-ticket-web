@@ -23,3 +23,14 @@ export const buscaIngresoByIdEvento = (evento_id) => api.request({
 		"Content-Type": "application/json",
 	},
 });
+
+export const editarIngresso = (ingressoData) => api.request({
+	method: "put",
+	baseURL: BASE_URL,
+	url: "/ingresso/edit",
+	data: ingressoData,
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${token}`,
+	},
+});
