@@ -207,6 +207,7 @@
 					{ titulo: "Meu Perfil", href: "meuPerfil" },
 					{ titulo: "Meus Eventos", href: "meusEventos" },
 					{ titulo: "Meus Ingressos", href: "meusIngressos" },
+					{ titulo: "Dashboard", href: "Dashboard" },
 					{ titulo: "Sair", href: "logout" },
 				];
 			},
@@ -247,6 +248,9 @@
 				}
 				if(item.titulo === "Meus Eventos"){
 					this.$router.push("/meus-eventos");
+				}
+				if(item.titulo === "Dashboard"){
+					this.$router.push("/dashboard");
 				}
 			},
 

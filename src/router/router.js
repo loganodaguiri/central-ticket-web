@@ -8,6 +8,7 @@ import Compra from "@/views/Compra.vue";
 import MeusDados from "@/views/MeuDados.vue";
 import MeusIngressos from "@/views/MeusIngressos.vue";
 import MeusEventos from "@/views/MeusEventos.vue";
+import Dashboard from "@/views/Dashboard.vue";
 
 Vue.use(VueRouter);
 
@@ -35,6 +36,9 @@ const routes = [
 	},
 	{
 		path: "/meus-eventos", name: "MeusEventos", component: MeusEventos, alias: "/", meta: { isAuthenticated: false },
+	},
+	{
+		path: "/dashboard", name: "Dashboard", component: Dashboard, alias: "/", meta: { isAuthenticated: false },
 	},
 ];
 
