@@ -26,8 +26,7 @@
 						<v-icon size="20" style="color: blue;">mdi-calendar</v-icon>
 					</div>
 					<p class="text-gray-500 text-sm">Eventos Ativos</p>
-					<h2 class="text-2xl font-semibold">12</h2>
-					<p class="text-green-600 text-sm card-status">↑ 2 desde ontem</p>
+					<h2 class="text-2xl font-semibold">{{ totalEventosAtivos }}</h2>
 				</div>
 
 				<!-- Card 2 -->
@@ -46,8 +45,7 @@
 						<v-icon size="20" style="color: purple;">mdi-ticket-confirmation</v-icon>
 					</div>
 					<p class="text-gray-500 text-sm">Ingressos Vendidos</p>
-					<h2 class="text-2xl font-semibold">856</h2>
-					<p class="text-red-600 text-sm card-status">↓ 2% este mês</p>
+					<h2 class="text-2xl font-semibold">{{ ingressosVendidos }}</h2>
 				</div>
 
 				<!-- Card 4 -->
@@ -56,8 +54,7 @@
 						<v-icon size="20" style="color: green;">mdi-currency-usd</v-icon>
 					</div>
 					<p class="text-gray-500 text-sm">Receita Total</p>
-					<h2 class="text-2xl font-semibold">R$ 42.560</h2>
-					<p class="text-green-600 text-sm card-status">↑ 12% este mês</p>
+					<h2 class="text-2xl font-semibold">R$ {{ receitaGerada }}</h2>
 				</div>
 			</div>
 
@@ -124,6 +121,10 @@
 <script>
 	import Rodape from "@/components/Rodape.vue";
 	import AppBar from "@/components/AppBar.vue";
+	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import {
+		busacarQuantidadeIngresso, busacarQuantidadeEventosAtivos, busacarReceitaGerada, busacarTotalArrecadadoPorEvento, busacarArrecadacoMensal, busacarPercentualVendaIngressos,
+	} from "@/services/DashboardService.js";
 
 	export default {
 		name: "Dashboard",
@@ -221,7 +222,207 @@
 					{ nome: "Congresso de Tecnologia", data: "15 de Maio, 09h" },
 					{ nome: "Meetup Vue.js", data: "20 de Maio, 19h" },
 				],
+
+				// Outras variaveis
+				ingressosVendidos: null,
+				totalEventosAtivos: null,
+				receitaGerada: null,
+				receitaGerada2: null,
 			};
+		},
+
+		created(){
+			this.busacarQuantidadeIngresso();
+			this.busacarQuantidadeEventosAtivos();
+			this.busacarReceitaGerada();
+			this.busacarTotalArrecadadoPorEvento();
+			this.busacarArrecadacoMensal();
+			this.busacarPercentualVendaIngressos();
+		},
+
+		methods: {
+			busacarQuantidadeIngresso(){
+				this.$carregando();
+				busacarQuantidadeIngresso(localStorage.getItem("authuserId"))
+					.then((res) => {
+						this.ingressosVendidos = res.data.total_ingressos_vendidos;
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar quantidade de ingressos vendidas.");
+						console.error(error);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			busacarQuantidadeEventosAtivos(){
+				this.$carregando();
+				busacarQuantidadeEventosAtivos(localStorage.getItem("authuserId"))
+					.then((res) => {
+						this.totalEventosAtivos = res.data.totalEventosAtivos;
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar quantidade de eventos ativos vendidas.");
+						console.error(error);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			busacarReceitaGerada(){
+				this.$carregando();
+				busacarReceitaGerada(localStorage.getItem("authuserId"))
+					.then((res) => {
+						this.receitaGerada = res.data.totalArrecadado;
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar a receita gerada.");
+						console.error(error);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			busacarTotalArrecadadoPorEvento(){
+				this.$carregando();
+
+				busacarTotalArrecadadoPorEvento(localStorage.getItem("authuserId"))
+					.then((res) => {
+						const eventos = res.data;
+
+						// Ordena do maior para o menor total arrecadado
+						eventos.sort((a, b) => b.total_arrecadado - a.total_arrecadado);
+
+						// Mantém apenas os 10 eventos com maior arrecadação
+						const eventosTop10 = eventos.slice(0, 10);
+
+						// Prepara nomes abreviados se forem muito longos
+						const nomesEventos = eventosTop10.map((e) => (e.nome_evento.length > 50 ? `${e.nome_evento.slice(0, 12)}...` : e.nome_evento));
+
+						// Atualiza o gráfico com os dados tratados
+						this.chartData = [
+							{
+								name: "Receita por Evento",
+								data: eventosTop10.map((e) => e.total_arrecadado),
+							},
+						];
+
+						this.chartOptions = {
+							...this.chartOptions, // mantém opções anteriores
+							xaxis: {
+								...this.chartOptions.xaxis,
+								categories: nomesEventos,
+								labels: {
+									rotate: -45,
+									style: {
+										fontSize: "12px",
+									},
+								},
+							},
+							title: {
+								text: "Top 10 Eventos por Receita",
+								align: "left",
+								style: {
+									fontSize: "16px",
+								},
+							},
+						};
+
+						// Receita total (de todos os eventos, não só os 10)
+						this.receitaGerada2 = eventos.reduce((total, e) => total + e.total_arrecadado, 0);
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar a receita gerada.");
+						console.error(error);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			busacarArrecadacoMensal(){
+				this.$carregando();
+
+				busacarArrecadacoMensal(localStorage.getItem("authuserId"))
+					.then((res) => {
+						const dados = res.data;
+
+						// Converte as datas para nomes de mês abreviados, ex: "Jan", "Feb", etc.
+						const meses = dados.map((item) => {
+							const [ano, mes] = item.mes.split("-").map(Number); // Agora só pegamos ano e mês
+							const data = new Date(ano, mes - 1); // mês - 1 pois janeiro = 0
+							return data.toLocaleString("pt-BR", { month: "short" }); // ou 'default' para inglês
+						});
+
+						// Extrai os valores
+						const valores = dados.map((item) => item.total_arrecadado);
+
+						// Atualiza o gráfico de linha
+						this.lineSeries = [
+							{
+								name: "Arrecadação",
+								data: valores,
+							},
+						];
+
+						this.lineOptions = {
+							...this.lineOptions,
+							xaxis: {
+								...this.lineOptions.xaxis,
+								categories: meses,
+							},
+						};
+
+						// Soma total de arrecadação do período
+						this.receitaGerada2 = valores.reduce((acc, v) => acc + v, 0);
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar a receita gerada.");
+						console.error(error);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			busacarPercentualVendaIngressos(){
+				this.$carregando();
+
+				busacarPercentualVendaIngressos(localStorage.getItem("authuserId"))
+					.then((res) => {
+						const dados = res.data;
+
+						// Extrai os nomes dos ingressos e as quantidades vendidas
+						const labels = dados.map((item) => item.nome_ingresso);
+						const series = dados.map((item) => item.quantidade_vendida);
+
+						// Atualiza os dados do gráfico de pizza
+						this.pieSeries = series;
+						this.pieOptions = {
+							...this.pieOptions,
+							labels,
+							title: {
+								text: "Ingressos Vendidos por Tipo",
+								align: "left",
+								style: {
+									fontSize: "16px",
+									fontWeight: "bold",
+									color: "#333",
+								},
+							},
+						};
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar a receita gerada.");
+						console.error(error);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
 		},
 	};
 </script>
