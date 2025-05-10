@@ -3,10 +3,10 @@ import api, { URLS } from "./api.js";
 const BASE_URL = "http://localhost:3000";
 const token = localStorage.getItem("authToken");
 
-export const busacarQuantidadeIngresso = (id) => api.request({
+export const busacarQuantidadeIngresso = (id, idEvento) => api.request({
 	method: "get",
 	baseURL: BASE_URL,
-	url: `/graficos/listaTotalIngressosVendidos/${id}`,
+	url: `/graficos/listaTotalIngressosVendidos/${id}/${idEvento}`,
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${token}`,
@@ -33,40 +33,40 @@ export const busacarQuantidadeEventos = (id) => api.request({
 	},
 });
 
-export const busacarReceitaGerada = (id) => api.request({
+export const busacarReceitaGerada = (id, idEvento) => api.request({
 	method: "get",
 	baseURL: BASE_URL,
-	url: `/graficos/getTotalArrecadado/${id}`,
+	url: `/graficos/getTotalArrecadado/${id}/${idEvento}`,
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${token}`,
 	},
 });
 
-export const busacarTotalArrecadadoPorEvento = (id) => api.request({
+export const busacarTotalArrecadadoPorEvento = (id, idEvento) => api.request({
 	method: "get",
 	baseURL: BASE_URL,
-	url: `/graficos/getTotalArrecadadoPorEvento/${id}`,
+	url: `/graficos/getTotalArrecadadoPorEvento/${id}/${idEvento}`,
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${token}`,
 	},
 });
 
-export const busacarArrecadacoMensal = (id) => api.request({
+export const busacarArrecadacoMensal = (id, idEvento) => api.request({
 	method: "get",
 	baseURL: BASE_URL,
-	url: `/graficos/getArrecadacaoMensal/${id}`,
+	url: `/graficos/getArrecadacaoMensal/${id}/${idEvento}`,
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${token}`,
 	},
 });
 
-export const busacarPercentualVendaIngressos = (id) => api.request({
+export const busacarPercentualVendaIngressos = (id, idEvento) => api.request({
 	method: "get",
 	baseURL: BASE_URL,
-	url: `/graficos/getPercentualVendaIngressos/${id}`,
+	url: `/graficos/getPercentualVendaIngressos/${id}/${idEvento}`,
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${token}`,
@@ -83,10 +83,10 @@ export const busacarProximosEventos = (id) => api.request({
 	},
 });
 
-export const participantesPorEvento = (id) => api.request({
+export const participantesPorEvento = (id, idEvento) => api.request({
 	method: "get",
 	baseURL: BASE_URL,
-	url: `/graficos/participantesPorEvento/${id}`,
+	url: `/graficos/participantesPorEvento/${id}/${idEvento}`,
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${token}`,
@@ -96,7 +96,7 @@ export const participantesPorEvento = (id) => api.request({
 export const participantesPorMes = (id, idEvento) => api.request({
 	method: "get",
 	baseURL: BASE_URL,
-	url: `/graficos/participantesPorMes/${id}`,
+	url: `/graficos/participantesPorMes/${id}/${idEvento}`,
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${token}`,

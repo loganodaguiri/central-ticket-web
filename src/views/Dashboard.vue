@@ -15,6 +15,15 @@
 			</div>
 		</div>
 
+		<v-row >
+			<v-col cols="12" lg="12">
+				<Eventos
+					label="Eventos"
+					v-model="planosSelecionados"
+					ref="selecaoEventos"/>
+			</v-col>
+		</v-row>
+
 		<!-- Container geral da dashboard -->
 		<div class="dashboard-container" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 20px;">
 
@@ -167,12 +176,14 @@
 		busacarQuantidadeIngresso, busacarQuantidadeEventosAtivos, busacarReceitaGerada, busacarTotalArrecadadoPorEvento, busacarArrecadacoMensal, busacarPercentualVendaIngressos, busacarProximosEventos,
 		busacarQuantidadeEventos, participantesPorEvento, participantesPorMes,
 	} from "@/services/DashboardService.js";
+	import Eventos from "@/components/Eventos.vue";
 
 	export default {
 		name: "Dashboard",
 		components: {
 			AppBar,
 			Rodape,
+			Eventos,
 		},
 
 		data(){
@@ -305,7 +316,23 @@
 				totalEventos: null,
 				receitaGerada: null,
 				receitaGerada2: null,
+				valorSelecionado: null,
+				planosSelecionados: null,
+				idEvento: null,
 			};
+		},
+
+		watch: {
+			planosSelecionados(newValue){
+				this.idEvento = newValue.id;
+				this.busacarQuantidadeIngresso();
+				this.busacarReceitaGerada();
+				this.busacarTotalArrecadadoPorEvento();
+				this.busacarArrecadacoMensal();
+				this.busacarPercentualVendaIngressos();
+				this.participantesPorEvento();
+				this.participantesPorMes();
+			},
 		},
 
 		created(){
@@ -324,7 +351,7 @@
 		methods: {
 			busacarQuantidadeIngresso(){
 				this.$carregando();
-				busacarQuantidadeIngresso(localStorage.getItem("authuserId"))
+				busacarQuantidadeIngresso(localStorage.getItem("authuserId"), this.idEvento)
 					.then((res) => {
 						this.ingressosVendidos = res.data.total_ingressos_vendidos;
 					})
@@ -369,7 +396,7 @@
 
 			busacarReceitaGerada(){
 				this.$carregando();
-				busacarReceitaGerada(localStorage.getItem("authuserId"))
+				busacarReceitaGerada(localStorage.getItem("authuserId"), this.idEvento)
 					.then((res) => {
 						this.receitaGerada = res.data.totalArrecadado;
 					})
@@ -385,7 +412,7 @@
 			busacarTotalArrecadadoPorEvento(){
 				this.$carregando();
 
-				busacarTotalArrecadadoPorEvento(localStorage.getItem("authuserId"))
+				busacarTotalArrecadadoPorEvento(localStorage.getItem("authuserId"), this.idEvento)
 					.then((res) => {
 						const eventos = res.data;
 
@@ -442,7 +469,7 @@
 			busacarArrecadacoMensal(){
 				this.$carregando();
 
-				busacarArrecadacoMensal(localStorage.getItem("authuserId"))
+				busacarArrecadacoMensal(localStorage.getItem("authuserId"), this.idEvento)
 					.then((res) => {
 						const dados = res.data;
 
@@ -487,7 +514,7 @@
 			busacarPercentualVendaIngressos(){
 				this.$carregando();
 
-				busacarPercentualVendaIngressos(localStorage.getItem("authuserId"))
+				busacarPercentualVendaIngressos(localStorage.getItem("authuserId"), this.idEvento)
 					.then((res) => {
 						const dados = res.data;
 
@@ -557,7 +584,7 @@
 			participantesPorEvento(){
 				this.$carregando();
 
-				participantesPorEvento(localStorage.getItem("authuserId"))
+				participantesPorEvento(localStorage.getItem("authuserId"), this.idEvento)
 					.then((res) => {
 						const eventos = res.data;
 
@@ -602,7 +629,7 @@
 			participantesPorMes(){
 				this.$carregando();
 
-				participantesPorMes(localStorage.getItem("authuserId"))
+				participantesPorMes(localStorage.getItem("authuserId"), this.idEvento)
 					.then((res) => {
 						const dados = res.data;
 
