@@ -23,38 +23,37 @@
 				<!-- Card 1 -->
 				<div class="card">
 					<div class="card-icon">
-						<v-icon size="20" style="color: blue;">mdi-calendar</v-icon>
+						<v-icon size="40" style="color: #16A34A;">mdi-calendar-multiselect</v-icon>
 					</div>
-					<p class="text-gray-500 text-sm">Eventos Ativos</p>
-					<h2 class="text-2xl font-semibold">{{ totalEventosAtivos }}</h2>
+					<p class="eventos-titulo">Totoal De Eventos</p>
+					<h2 class="eventos-titulo">{{ totalEventos }}</h2>
 				</div>
 
 				<!-- Card 2 -->
 				<div class="card">
 					<div class="card-icon">
-						<v-icon size="20" style="color: #16A34A;">mdi-account-group</v-icon>
+						<v-icon size="40" style="color: blue;">mdi-calendar-check</v-icon>
 					</div>
-					<p class="text-gray-500 text-sm">Participantes</p>
-					<h2 class="text-2xl font-semibold">1.248</h2>
-					<p class="text-green-600 text-sm card-status">↑ 5% este mês</p>
+					<p class="eventos-titulo">Eventos Ativos</p>
+					<h2 class="eventos-titulo">{{ totalEventosAtivos }}</h2>
 				</div>
 
 				<!-- Card 3 -->
 				<div class="card">
 					<div class="card-icon">
-						<v-icon size="20" style="color: purple;">mdi-ticket-confirmation</v-icon>
+						<v-icon size="40" style="color: purple;">mdi-ticket-confirmation</v-icon>
 					</div>
-					<p class="text-gray-500 text-sm">Ingressos Vendidos</p>
-					<h2 class="text-2xl font-semibold">{{ ingressosVendidos }}</h2>
+					<p class="eventos-titulo">Ingressos Vendidos</p>
+					<h2 class="eventos-titulo">{{ ingressosVendidos }}</h2>
 				</div>
 
 				<!-- Card 4 -->
 				<div class="card">
 					<div class="card-icon">
-						<v-icon size="20" style="color: green;">mdi-currency-usd</v-icon>
+						<v-icon size="40" style="color: green;">mdi-currency-usd</v-icon>
 					</div>
-					<p class="text-gray-500 text-sm">Receita Total</p>
-					<h2 class="text-2xl font-semibold">R$ {{ receitaGerada }}</h2>
+					<p class="eventos-titulo">Receita Total</p>
+					<h2 class="eventos-titulo">R$ {{ receitaGerada }}</h2>
 				</div>
 			</div>
 
@@ -81,6 +80,15 @@
 							:series="pieSeries"
 							/>
 					</div>
+
+					<div class="grafico-barras" style="flex: 1;">
+						<apexchart
+							type="bar"
+							height="350"
+							:options="chartOptionsParticipantes"
+							:series="chartDataParticipantes"
+							/>
+					</div>
 				</div>
 
 				<div class="graficos-coluna" style="flex: 1; display: flex; flex-direction: column; gap: 20px;">
@@ -88,14 +96,38 @@
 					<div class="eventos-box">
 						<h3 class="eventos-titulo">Próximos Eventos</h3>
 						<ul class="eventos-lista">
-							<li v-for="evento in eventos" :key="evento.nome">
-								<p class="evento-nome">{{ evento.nome }}</p>
-								<p class="evento-data">{{ evento.data }}</p>
+							<li v-for="evento in eventos.slice(0, 3)" :key="evento.nome_evento" class="evento-item">
+								<div class="evento-info">
+									<img
+										:src="evento.photos"
+										alt="Ícone do evento"
+										class="evento-imagem"
+										/>
+									<div class="evento-texto">
+										<p class="evento-nome">{{ evento.nome_evento }}</p>
+										<p class="evento-data">{{ evento.data }}</p>
+										<div class="barra-container" :title="evento.porcentagem_vendida + '% de ingressos vendidos'">
+											<div
+												class="barra-preenchida"
+												:style="{
+													width: evento.porcentagem_vendida
+														? `${parseFloat(evento.porcentagem_vendida)}%`
+														: '0%'
+												}"
+												/>
+											<span class="porcentagem-texto">
+												{{ parseFloat(evento.porcentagem_vendida) }}%
+											</span>
+										</div>
+									</div>
+								</div>
 							</li>
-							<a>
-								<button>CADSTRE SEU EVENTO</button>
-							</a>
 						</ul>
+
+						<!-- Botão embaixo da lista, ocupando toda a largura -->
+						<div class="evento-cadastro-wrapper">
+							<button class="evento-cadastro-btn">VER TODOS EVENTOS</button>
+						</div>
 					</div>
 
 					<!-- Gráfico de Linha -->
@@ -105,6 +137,15 @@
 							height="300"
 							:options="lineOptions"
 							:series="lineSeries"
+							/>
+					</div>
+					<!-- Gráfico de Participantes por Mês -->
+					<div class="grafico-linha" style="flex: 1;">
+						<apexchart
+							:options="participantesOptions"
+							:series="participantesSeries"
+							type="line"
+							height="350"
 							/>
 					</div>
 				</div>
@@ -123,7 +164,8 @@
 	import AppBar from "@/components/AppBar.vue";
 	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 	import {
-		busacarQuantidadeIngresso, busacarQuantidadeEventosAtivos, busacarReceitaGerada, busacarTotalArrecadadoPorEvento, busacarArrecadacoMensal, busacarPercentualVendaIngressos,
+		busacarQuantidadeIngresso, busacarQuantidadeEventosAtivos, busacarReceitaGerada, busacarTotalArrecadadoPorEvento, busacarArrecadacoMensal, busacarPercentualVendaIngressos, busacarProximosEventos,
+		busacarQuantidadeEventos, participantesPorEvento, participantesPorMes,
 	} from "@/services/DashboardService.js";
 
 	export default {
@@ -216,16 +258,51 @@
 					},
 				},
 
+				// Grafico barra 2
+				chartDataParticipantes: [],
+				chartOptionsParticipantes: {
+					chart: {
+						type: "bar",
+						height: 350,
+					},
+					xaxis: {
+						categories: [],
+					},
+					title: {
+						text: "Top 10 Eventos por Participantes",
+						align: "left",
+						style: {
+							fontSize: "16px",
+						},
+					},
+				},
+
+				// Dados e configurações do gráfico de Participantes
+				participantesSeries: [],
+				participantesOptions: {
+					chart: {
+						type: "line",
+						height: 350,
+					},
+					xaxis: {
+						categories: [], // Meses
+					},
+					title: {
+						text: "Participantes por Mês",
+						align: "left",
+						style: {
+							fontSize: "16px",
+						},
+					},
+				},
+
 				// Eventos
-				eventos: [
-					{ nome: "Workshop de Design", data: "10 de Maio, 14h" },
-					{ nome: "Congresso de Tecnologia", data: "15 de Maio, 09h" },
-					{ nome: "Meetup Vue.js", data: "20 de Maio, 19h" },
-				],
+				eventos: [],
 
 				// Outras variaveis
 				ingressosVendidos: null,
 				totalEventosAtivos: null,
+				totalEventos: null,
 				receitaGerada: null,
 				receitaGerada2: null,
 			};
@@ -238,6 +315,10 @@
 			this.busacarTotalArrecadadoPorEvento();
 			this.busacarArrecadacoMensal();
 			this.busacarPercentualVendaIngressos();
+			this.busacarProximosEventos();
+			this.busacarQuantidadeEventos();
+			this.participantesPorEvento();
+			this.participantesPorMes();
 		},
 
 		methods: {
@@ -271,6 +352,21 @@
 					});
 			},
 
+			busacarQuantidadeEventos(){
+				this.$carregando();
+				busacarQuantidadeEventos(localStorage.getItem("authuserId"))
+					.then((res) => {
+						this.totalEventos = res.data.totalEventos;
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar quantidade de eventos.");
+						console.error(error);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
 			busacarReceitaGerada(){
 				this.$carregando();
 				busacarReceitaGerada(localStorage.getItem("authuserId"))
@@ -294,7 +390,7 @@
 						const eventos = res.data;
 
 						// Ordena do maior para o menor total arrecadado
-						eventos.sort((a, b) => b.total_arrecadado - a.total_arrecadado);
+						eventos.sort((a, b) => b.receita_total - a.receita_total);
 
 						// Mantém apenas os 10 eventos com maior arrecadação
 						const eventosTop10 = eventos.slice(0, 10);
@@ -306,7 +402,7 @@
 						this.chartData = [
 							{
 								name: "Receita por Evento",
-								data: eventosTop10.map((e) => e.total_arrecadado),
+								data: eventosTop10.map((e) => e.receita_total), // Ajustando para receita_total
 							},
 						];
 
@@ -332,7 +428,7 @@
 						};
 
 						// Receita total (de todos os eventos, não só os 10)
-						this.receitaGerada2 = eventos.reduce((total, e) => total + e.total_arrecadado, 0);
+						this.receitaGerada2 = eventos.reduce((total, e) => total + e.receita_total, 0); // Ajustando para receita_total
 					})
 					.catch((error) => {
 						exibirMensagemErroApi("Erro ao buscar a receita gerada.");
@@ -417,6 +513,150 @@
 					})
 					.catch((error) => {
 						exibirMensagemErroApi("Erro ao buscar a receita gerada.");
+						console.error(error);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			busacarProximosEventos(){
+				this.$carregando();
+				busacarProximosEventos(localStorage.getItem("authuserId"))
+					.then((res) => {
+						this.eventos = res.data.map((evento) => {
+							const data = new Date(`${evento.dateStart}T${evento.startTime}`);
+
+							const dia = String(data.getDate()).padStart(2, "0");
+							const mesAbreviado = data.toLocaleString("pt-BR", { month: "short" });
+							const horaMinuto = data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+							// Removendo as aspas extras da URL em 'photos'
+							const photoUrl = evento.photos.replace(/^"|"$/g, ""); // Remove as aspas no início e no final
+
+							return {
+								...evento,
+								data: `${dia} ${mesAbreviado} • ${horaMinuto}`,
+								photos: photoUrl, // Aqui substituímos o valor da foto
+							};
+						});
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar próximos eventos.");
+						console.error(error);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			getPercentualNumerico(percentual){
+				return percentual ? parseFloat(percentual.replace("%", "")) : 0;
+			},
+
+			participantesPorEvento(){
+				this.$carregando();
+
+				participantesPorEvento(localStorage.getItem("authuserId"))
+					.then((res) => {
+						const eventos = res.data;
+
+						// Ordena do maior para o menor total de participantes
+						eventos.sort((a, b) => b.total_participantes - a.total_participantes);
+
+						// Mantém apenas os 10 eventos com mais participantes
+						const eventosTop10 = eventos.slice(0, 10);
+
+						const nomesEventos = eventosTop10.map((e) => (e.nome_evento.length > 50 ? `${e.nome_evento.slice(0, 12)}...` : e.nome_evento));
+
+						// DADOS PARA O NOVO GRÁFICO DE PARTICIPANTES
+						this.chartDataParticipantes = [
+							{
+								name: "Participantes por Evento",
+								data: eventosTop10.map((e) => e.total_participantes),
+							},
+						];
+
+						this.chartOptionsParticipantes = {
+							...this.chartOptionsParticipantes,
+							xaxis: {
+								categories: nomesEventos,
+								labels: {
+									rotate: -45,
+									style: {
+										fontSize: "12px",
+									},
+								},
+							},
+						};
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar os participantes por evento.");
+						console.error(error);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			participantesPorMes(){
+				this.$carregando();
+
+				participantesPorMes(localStorage.getItem("authuserId"))
+					.then((res) => {
+						const dados = res.data;
+
+						// Mapeamento dos meses em inglês para abreviações em português
+						const mesTraducaoAbreviado = {
+							January: "Jan",
+							February: "Fev",
+							March: "Mar",
+							April: "Abr",
+							May: "Mai",
+							June: "Jun",
+							July: "Jul",
+							August: "Ago",
+							September: "Set",
+							October: "Out",
+							November: "Nov",
+							December: "Dez",
+						};
+
+						// Converte os nomes dos meses para abreviações em português
+						const mesesAbreviados = dados.map((item) => mesTraducaoAbreviado[item.nome_mes] || item.nome_mes);
+
+						// Extrai os valores de participantes (garantindo que sejam números)
+						const participantes = dados.map((item) => Number(item.total_participantes));
+
+						// Atualiza o gráfico de linhas
+						this.participantesSeries = [
+							{
+								name: "Participantes",
+								data: participantes,
+							},
+						];
+
+						this.participantesOptions = {
+							chart: {
+								type: "line",
+							},
+							xaxis: {
+								categories: mesesAbreviados, // Usando as abreviações
+							},
+							title: {
+								text: "Participantes por Mês",
+								align: "left",
+								style: {
+									fontSize: "16px",
+								},
+							},
+						};
+
+						// Participantes totais do ano
+						this.totalParticipantesAno = participantes.reduce((acc, v) => acc + v, 0);
+					})
+					.catch((error) => {
+						exibirMensagemErroApi("Erro ao buscar os participantes.");
 						console.error(error);
 					})
 					.finally(() => {
@@ -597,6 +837,54 @@
 		height: 280px;
 	}
 
+	.evento-info {
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
+		margin-top: 15px;
+	}
+
+	.evento-imagem {
+		width: 80px;
+		height: 70px;
+	}
+
+	.barra-container {
+    position: relative;
+    background-color: #e0e0e0;
+    border-radius: 8px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 4px;
+	}
+
+	.barra-preenchida {
+		background-color: #2410C2;
+		height: 100%;
+		transition: width 0.3s ease;
+	}
+
+	.porcentagem-texto {
+		margin-left: 8px;
+		font-size: 0.85rem;
+		color: #333;
+		white-space: nowrap;
+	}
+
+	.evento-texto {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.evento-nome,
+	.evento-data {
+		margin: 0;
+		line-height: 1.2;
+		font-size: 16px;
+	}
+
 	.eventos-lista li {
 		margin-bottom: 12px;
 	}
@@ -613,6 +901,24 @@
 	.grafico-pizza {
 		margin-top: 20px;
 		height: 280px;
+	}
+
+	.evento-cadastro-wrapper {
+		margin-top: 16px;
+		width: 100%;
+	}
+
+	.evento-cadastro-btn {
+		width: 100%;
+		padding: 12px 16px;
+		background-color: var(--cor-primaria-100); /* ou qualquer cor que desejar */
+		color: white;
+		background-color: #EA0763;
+		font-weight: bold;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: background-color 0.3s;
 	}
 
 	@media (min-width: 640px) {

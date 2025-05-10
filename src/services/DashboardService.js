@@ -23,6 +23,16 @@ export const busacarQuantidadeEventosAtivos = (id) => api.request({
 	},
 });
 
+export const busacarQuantidadeEventos = (id) => api.request({
+	method: "get",
+	baseURL: BASE_URL,
+	url: `/graficos/listaEventos/${id}`,
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${token}`,
+	},
+});
+
 export const busacarReceitaGerada = (id) => api.request({
 	method: "get",
 	baseURL: BASE_URL,
@@ -57,6 +67,36 @@ export const busacarPercentualVendaIngressos = (id) => api.request({
 	method: "get",
 	baseURL: BASE_URL,
 	url: `/graficos/getPercentualVendaIngressos/${id}`,
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${token}`,
+	},
+});
+
+export const busacarProximosEventos = (id) => api.request({
+	method: "get",
+	baseURL: BASE_URL,
+	url: `/graficos/getProximosEventos/${id}`,
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${token}`,
+	},
+});
+
+export const participantesPorEvento = (id) => api.request({
+	method: "get",
+	baseURL: BASE_URL,
+	url: `/graficos/participantesPorEvento/${id}`,
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${token}`,
+	},
+});
+
+export const participantesPorMes = (id, idEvento) => api.request({
+	method: "get",
+	baseURL: BASE_URL,
+	url: `/graficos/participantesPorMes/${id}`,
 	headers: {
 		"Content-Type": "application/json",
 		Authorization: `Bearer ${token}`,
