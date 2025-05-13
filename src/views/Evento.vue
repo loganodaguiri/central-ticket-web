@@ -228,6 +228,19 @@
 					exibirMensagemAtencao("Favor fazer login antes de comprar um evento");
 				}
 				else{
+					// Filtra apenas ingressos com quantidade > 0
+					const ingressosSelecionados = this.ingressos
+						.filter((i) => i.quantidade > 0)
+						.map((i) => ({
+							ingresso_id: i.ingresso_id,
+							quantidade: i.quantidade,
+							valor: i.valor,
+						}));
+
+					// Salva no localStorage
+					localStorage.setItem("ingressosSelecionados", JSON.stringify(ingressosSelecionados));
+
+					// Redireciona
 					this.$router.push("/compra");
 				}
 			},

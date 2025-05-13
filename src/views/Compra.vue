@@ -1,156 +1,88 @@
 <template>
 	<div class="wrapper">
-		<div>
-			<AppBar />
-		</div>
+		<AppBar />
 
 		<!-- Banner -->
 		<div class="banner" :style="{ backgroundImage: 'url(' + require('@/assets/speaker-bg.png') + ')' }">
-			<div class="banner-content" v-bind:class="{'mx-auto':$vuetify.breakpoint.mdAndDown}">
-				<p class="banner-texto-grande" style="align-items: center;">
-					Compra
-				</p>
+			<div class="banner-content" :class="{ 'mx-auto': $vuetify.breakpoint.mdAndDown }">
+				<p class="banner-texto-grande">Compra</p>
 			</div>
 		</div>
 
 		<!-- Cartão -->
-		<div class="form-container">
-			<v-row>
-				<v-col cols="12">
-					<span class="form-section-title">Insira abaixo os dados do cartão de crédito</span>
-				</v-col>
-
-				<v-col cols="12" sm="6" md="6" lg="12" xl="8">
-					<p class="form-label">Nome (Igual impresso no cartão)</p>
-					<v-text-field class="custom-file-input" v-model="dadosCartao.nome" />
-				</v-col>
-
-				<v-col cols="12" sm="6" md="6" lg="12" xl="4">
-					<p class="form-label">CPF do titular</p>
-					<v-text-field class="custom-file-input" v-model="dadosCartao.cpf" />
-				</v-col>
-
-				<v-col cols="12" sm="6" md="6" lg="8">
-					<p class="form-label">Número</p>
-					<v-text-field class="custom-file-input" v-model="numeroCartao" @input="buscarBandeira(numeroCartao)" />
-				</v-col>
-
-				<v-col cols="12" sm="6" md="6" lg="4">
-					<p class="form-label">CVV</p>
-					<v-text-field class="custom-file-input" v-model="dadosCartao.cvv" />
-				</v-col>
-
-				<v-col cols="12" sm="6" md="6" lg="12" xl="4">
-					<p class="form-label">Bandeira</p>
-					<v-select
-						v-model="dadosCartao.bandeira"
-						:items="['Visa', 'MasterCard', 'American Express', 'Elo', 'Hipercard']"
-						label="Selecione a bandeira do cartão"
-						dense
-						class="custom-file-input"
-						/>
-				</v-col>
-
-				<v-col cols="12" sm="6" md="6" lg="12" xl="4">
-					<p class="form-label">Validade</p>
-					<v-text-field
-						v-model="dadosCartao.validade"
-						class="custom-file-input"
-						placeholder="MM/AA"
-						mask="##/####"
-						maxlength="7"
-						type="text"
-						hint="Formato: MM/AAAA"
-						persistent-hint
-						/>
-				</v-col>
-
-				<v-col cols="12" sm="6" md="6" lg="12" xl="4">
-					<p class="form-label">Parcelar em até</p>
-					<v-select
-						v-model="numeroParcelas"
-						:items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
-						label="Selecione o número de parcelas"
-						dense
-						class="custom-file-input"
-						/>
-				</v-col>
-			</v-row>
-		</div>
+		<v-container class="py-6">
+			<v-card elevation="4" class="pa-6 rounded-xl">
+				<h2 class="form-section-title mb-6">Insira os dados do cartão de crédito</h2>
+				<v-row dense>
+					<v-col cols="12" sm="6">
+						<v-text-field v-model="dadosCartao.nome" label="Nome no cartão" class="custom-file-input" />
+					</v-col>
+					<v-col cols="12" sm="6">
+						<v-text-field v-model="dadosCartao.cpf" label="CPF do titular" class="custom-file-input" />
+					</v-col>
+					<v-col cols="12" sm="8">
+						<v-text-field v-model="numeroCartao" @input="buscarBandeira(numeroCartao)" label="Número do cartão" class="custom-file-input" />
+					</v-col>
+					<v-col cols="12" sm="4">
+						<v-text-field v-model="dadosCartao.cvv" label="CVV" class="custom-file-input" />
+					</v-col>
+					<v-col cols="12" sm="4">
+						<v-text-field
+							v-model="dadosCartao.validade"
+							label="Validade (MM/AAAA)"
+							class="custom-file-input"
+							placeholder="MM/AAAA"
+							v-mask="'##/####'"
+							maxlength="7"
+							persistent-hint
+							dense
+							/>
+					</v-col>
+					<v-col cols="12" sm="4">
+						<v-select v-model="dadosCartao.bandeira" :items="['Visa', 'MasterCard', 'American Express', 'Elo', 'Hipercard']" label="Bandeira" dense class="custom-file-input" />
+					</v-col>
+					<v-col cols="12" sm="4">
+						<v-select v-model="numeroParcelas" :items="[...Array(12).keys()].map(i => i + 1)" label="Parcelamento" dense class="custom-file-input" />
+					</v-col>
+				</v-row>
+			</v-card>
+		</v-container>
 
 		<!-- Endereço de cobrança -->
-		<div class="form-container">
-			<span class="form-section-title">Endereço de cobrança:</span>
-			<v-row>
-				<v-col cols="12" md="4">
-					<v-text-field
-						v-model="dadosCartao.endereco.cep"
-						label="CEP"
-						:rules="[v => !!v || 'Campo obrigatório']"
-						required
-						class="custom-file-input"
-						/>
-				</v-col>
+		<v-container class="py-6">
+			<v-card elevation="4" class="pa-6 rounded-xl">
+				<h2 class="form-section-title mb-6">Endereço de cobrança</h2>
+				<v-row dense>
+					<v-col cols="12" md="4">
+						<v-text-field v-model="dadosCartao.endereco.cep" label="CEP" :rules="[v => !!v || 'Campo obrigatório']" required class="custom-file-input" />
+					</v-col>
+					<v-col cols="12" md="8">
+						<v-text-field v-model="dadosCartao.endereco.logradouro" label="Av./Rua" disabled class="custom-file-input" />
+					</v-col>
+					<v-col cols="12" md="4">
+						<v-text-field v-model="dadosCartao.endereco.numeroLogradouro" label="Número" class="custom-file-input" />
+					</v-col>
+					<v-col cols="12" md="6">
+						<v-text-field v-model="dadosCartao.endereco.bairro" label="Bairro" disabled class="custom-file-input" />
+					</v-col>
+					<v-col cols="12" md="4">
+						<v-text-field v-model="dadosCartao.endereco.municipio" label="Cidade" disabled class="custom-file-input" />
+					</v-col>
+					<v-col cols="12" md="2">
+						<v-text-field v-model="dadosCartao.endereco.uf" label="UF" maxlength="2" disabled class="custom-file-input" />
+					</v-col>
+				</v-row>
+			</v-card>
+		</v-container>
 
-				<v-col cols="12" md="8">
-					<v-text-field
-						v-model="dadosCartao.endereco.logradouro"
-						label="Av./Rua"
-						:rules="[v => !!v || 'Campo obrigatório']"
-						required
-						disabled
-						class="custom-file-input"
-						/>
-				</v-col>
-
-				<v-col cols="12" md="4">
-					<v-text-field
-						v-model="dadosCartao.endereco.numeroLogradouro"
-						label="Número"
-						class="custom-file-input"
-						/>
-				</v-col>
-
-				<v-col cols="12" md="6">
-					<v-text-field
-						v-model="dadosCartao.endereco.bairro"
-						label="Bairro"
-						disabled
-						class="custom-file-input"
-						/>
-				</v-col>
-
-				<v-col cols="12" md="4">
-					<v-text-field
-						v-model="dadosCartao.endereco.municipio"
-						label="Cidade"
-						disabled
-						class="custom-file-input"
-						/>
-				</v-col>
-
-				<v-col cols="12" md="2">
-					<v-text-field
-						v-model="dadosCartao.endereco.uf"
-						label="UF"
-						maxlength="2"
-						disabled
-						class="custom-file-input"
-						/>
-				</v-col>
-			</v-row>
-		</div>
-
-		<!-- Botão salvar -->
-		<div class="form-container" style="text-align: center;">
-			<v-btn color="primary" @click="criarCompra">
-				Finalizar Compra
+		<!-- Botão finalizar -->
+		<v-container class="pb-10 text-center">
+			<v-btn color="#EA0763" large class="px-10 py-4" @click="criarCompra">
+				<p style="color: white;">Finalizar Compra</p>
 			</v-btn>
-		</div>
+		</v-container>
 
-		<div>
-			<Rodape />
-		</div>
+		<Rodape />
 	</div>
 </template>
 
@@ -220,6 +152,8 @@
 		},
 
 		created(){
+			const ingressosSalvos = localStorage.getItem("ingressosSelecionados");
+			this.itensCarrinho = ingressosSalvos ? JSON.parse(ingressosSalvos) : [];
 			this.bucaUser();
 		},
 
@@ -257,22 +191,19 @@
 
 			async criarCompra(){
 				this.$carregando();
+
 				const compraFormulario = {
 					usuario_id: localStorage.getItem("authuserId"),
-					itens: [
-						{
-							ingresso_id: 22,
-							quantidade: 1,
-							valor: 100,
-						},
-					],
+					itens: this.itensCarrinho,
 				};
 
 				criarCompra(compraFormulario)
 					.then((res) => {
 						this.idCompra = res.data.compra.compra_id;
+						localStorage.removeItem("ingressosSelecionados");
 						this.finalizarCompra();
-					}).catch((error) => {
+					})
+					.catch((error) => {
 						exibirMensagemErroApi("Erro ao criar compra.");
 					})
 					.finally(() => {
@@ -304,6 +235,8 @@
 				};
 				finalizarCompra(payload, this.idCompra)
 					.then((res) => {
+						exibirMensagemSucesso("Compra realizada com sucesso");
+						this.$router.push("/meus-ingressos");
 					}).catch((error) => {
 						exibirMensagemErroApi("Erro ao finalizar compra.");
 					})
@@ -317,9 +250,31 @@
 
 <style scoped>
 
-	div::v-deep.wrapper{
-		background:#f9f9f9;
-		overflow-x:hidden;
+	.form-section-title {
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.custom-file-input input {
+		background-color: #f9f9f9;
+	}
+
+	.banner {
+		background-size: cover;
+		background-position: center;
+		padding: 60px 20px;
+		color: white;
+		text-align: center;
+	}
+
+	.banner-texto-grande {
+		font-size: 2.5rem;
+		font-weight: bold;
+	}
+
+	.wrapper {
+		background-color: #f5f5f5;
 	}
 
 	.banner::v-deep {
@@ -433,13 +388,6 @@
 	.v-label,
 	.v-input__control {
 		color: black !important;
-	}
-
-	.v-text-field,
-	.v-select {
-		border: 1px solid #ccc;
-		border-radius: 8px;
-		background-color: white;
 	}
 
 	.form-section-title {
