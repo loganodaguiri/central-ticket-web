@@ -15,17 +15,16 @@
 			</div>
 		</div>
 
-		<v-row >
-			<v-col cols="12" lg="12">
+		<!-- Container geral da dashboard -->
+		<div class="dashboard-container" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 20px;">
+
+			<div style="flex: 1 1 100%; display: flex; justify-content: flex-start;">
 				<Eventos
 					label="Eventos"
 					v-model="planosSelecionados"
-					ref="selecaoEventos"/>
-			</v-col>
-		</v-row>
-
-		<!-- Container geral da dashboard -->
-		<div class="dashboard-container" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 20px;">
+					ref="selecaoEventos"
+					/>
+			</div>
 
 			<!-- Cards -->
 			<div class="dashboard-cards" style="flex: 1 1 100%; display: flex; justify-content: space-between; gap: 20px;">
@@ -276,6 +275,7 @@
 						type: "bar",
 						height: 350,
 					},
+					colors: ["#2410C2"],
 					xaxis: {
 						categories: [],
 					},
@@ -297,6 +297,11 @@
 					},
 					xaxis: {
 						categories: [], // Meses
+					},
+					stroke: {
+						curve: "smooth",
+						width: 3,
+						colors: ["#2410C2"],
 					},
 					title: {
 						text: "Participantes por Mês",
@@ -586,7 +591,8 @@
 
 				participantesPorEvento(localStorage.getItem("authuserId"), this.idEvento)
 					.then((res) => {
-						const eventos = res.data;
+						// Remove eventos com 0 participantes
+						const eventos = res.data.filter((e) => Number(e.total_participantes) > 0);
 
 						// Ordena do maior para o menor total de participantes
 						eventos.sort((a, b) => b.total_participantes - a.total_participantes);
@@ -596,7 +602,6 @@
 
 						const nomesEventos = eventosTop10.map((e) => (e.nome_evento.length > 50 ? `${e.nome_evento.slice(0, 12)}...` : e.nome_evento));
 
-						// DADOS PARA O NOVO GRÁFICO DE PARTICIPANTES
 						this.chartDataParticipantes = [
 							{
 								name: "Participantes por Evento",
@@ -649,17 +654,35 @@
 							December: "Dez",
 						};
 
+						// Ordem correta dos meses para ordenação
+						const ordemMeses = [
+							"January", "February", "March", "April", "May", "June",
+							"July", "August", "September", "October", "November", "December",
+						];
+
+						// Ordena os dados com base na ordem dos meses
+						const dadosOrdenados = dados.sort(
+							(a, b) => ordemMeses.indexOf(a.nome_mes) - ordemMeses.indexOf(b.nome_mes),
+						);
+
+						// Obtém o índice do mês atual (0 = Janeiro, 11 = Dezembro)
+						const mesAtualIndex = new Date().getMonth();
+
 						// Converte os nomes dos meses para abreviações em português
-						const mesesAbreviados = dados.map((item) => mesTraducaoAbreviado[item.nome_mes] || item.nome_mes);
+						const mesesAbreviados = dadosOrdenados.map((item) => mesTraducaoAbreviado[item.nome_mes] || item.nome_mes);
 
 						// Extrai os valores de participantes (garantindo que sejam números)
-						const participantes = dados.map((item) => Number(item.total_participantes));
+						const participantes = dadosOrdenados.map((item) => Number(item.total_participantes));
+
+						// Corta os arrays até o mês atual (inclusive)
+						const mesesFiltrados = mesesAbreviados.slice(0, mesAtualIndex + 1);
+						const participantesFiltrados = participantes.slice(0, mesAtualIndex + 1);
 
 						// Atualiza o gráfico de linhas
 						this.participantesSeries = [
 							{
 								name: "Participantes",
-								data: participantes,
+								data: participantesFiltrados,
 							},
 						];
 
@@ -668,7 +691,7 @@
 								type: "line",
 							},
 							xaxis: {
-								categories: mesesAbreviados, // Usando as abreviações
+								categories: mesesFiltrados,
 							},
 							title: {
 								text: "Participantes por Mês",
@@ -679,8 +702,8 @@
 							},
 						};
 
-						// Participantes totais do ano
-						this.totalParticipantesAno = participantes.reduce((acc, v) => acc + v, 0);
+						// Participantes totais do ano até o mês atual
+						this.totalParticipantesAno = participantesFiltrados.reduce((acc, v) => acc + v, 0);
 					})
 					.catch((error) => {
 						exibirMensagemErroApi("Erro ao buscar os participantes.");
