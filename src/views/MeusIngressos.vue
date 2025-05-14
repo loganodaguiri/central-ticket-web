@@ -19,12 +19,25 @@
 					v-for="ingresso in ingressos"
 					:key="ingresso.compra_id"
 					cols="12"
-					sm="6"
+					sm="4"
 					md="4"
+					lg="4"
 					>
-					<v-card class="pa-4" elevation="2">
+					<!-- Adicionando uma classe condicional para bloquear o card -->
+					<v-card
+						class="pa-4"
+						elevation="2"
+						:style="ingresso.status !== 'Aprovada' ? { opacity: 0.5, pointerEvents: 'none' } : {}"
+						style="max-width: 400px; margin: 0 auto;">
+
+						<v-img
+							:src="ingresso.photos"
+							height="200px"
+							class="mb-4"
+							:alt="ingresso.titulo"
+							/>
+
 						<div class="d-flex justify-space-between">
-							<!-- Verificando a foto antes de exibir -->
 							<v-chip
 								:color="ingresso.status === 'Aprovada' ? 'green' : 'grey'"
 								text-color="white"
@@ -33,11 +46,21 @@
 								>
 								{{ ingresso.status }}
 							</v-chip>
+
+							<!-- Ícone de cadeado se o status for diferente de 'Aprovada' -->
+							<v-icon
+								v-if="ingresso.status !== 'Aprovada'"
+								color="grey"
+								class="ml-2"
+								style="font-size: 30px;"
+								>
+								mdi-lock
+							</v-icon>
 						</div>
 
 						<div class="mt-4">
-							<h3 class="text-h6 font-weight-bold">{{ ingresso.titulo }}</h3>
-							<div class="text-subtitle-2 mb-2">{{ ingresso.subtitulo }}</div>
+							<h3 class="text-h6 font-weight-bold">{{ ingresso.nome_evento }}</h3>
+							<div class="text-subtitle-2 mb-2">{{ ingresso.titulo_ingresso }}</div>
 
 							<v-chip
 								v-if="ingresso.tipo"
@@ -49,22 +72,27 @@
 								{{ ingresso.tipo }}
 							</v-chip>
 
-							<div><strong>Data:</strong> {{ ingresso.data }}</div>
-							<div><strong>Horário:</strong> {{ ingresso.horario }}</div>
-							<div><strong>Local:</strong> {{ ingresso.local }}</div>
-							<div><strong>Ingresso:</strong> #{{ ingresso.codigo }}</div>
+							<!-- Data e Horário lado a lado -->
+							<div class="d-flex justify-space-between mb-2">
+								<div><strong>Data:</strong> {{ ingresso.dataFormatada }}</div>
+								<div><strong>Horário:</strong> {{ ingresso.horaFormatada }}</div>
+							</div>
+
+							<!-- Local e Ingresso lado a lado -->
+							<div class="d-flex justify-space-between mb-2">
+								<div><strong>Local:</strong> {{ ingresso.nome_local }}</div>
+								<div><strong>Ingresso:</strong> #{{ ingresso.compra_id }}</div>
+							</div>
 						</div>
 
 						<v-divider class="my-3" />
 
+						<!-- Botões desabilitados se o status for diferente de "Aprovada" -->
 						<div class="d-flex justify-space-between">
-							<v-btn icon small>
+							<v-btn icon small @click="compartilharLink(ingresso.evento_id)">
 								<v-icon>mdi-share-variant</v-icon>
 							</v-btn>
-							<v-btn icon small>
-								<v-icon>mdi-map-marker</v-icon>
-							</v-btn>
-							<v-btn icon small>
+							<v-btn icon small :disabled="ingresso.status !== 'Aprovada'" @click="abrirQRCode(ingresso.qr_code)">
 								<v-icon>mdi-qrcode</v-icon>
 							</v-btn>
 						</div>
@@ -77,6 +105,24 @@
 		<div style="margin-top: 2%;">
 			<Rodape />
 		</div>
+
+		<!-- Dialog para exibir QR Code -->
+		<v-dialog v-model="dialogQRCode" max-width="400px">
+			<v-card>
+				<v-card-title class="headline">QR Code</v-card-title>
+				<v-card-text>
+					<v-img :src="qrCodeBase64" max-width="100%" />
+				</v-card-text>
+				<v-card-actions>
+					<v-btn color="primary" @click="dialogQRCode = false">Fechar</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
+		<!-- Snackbar de confirmação -->
+		<v-snackbar v-model="snackbarVisible" :timeout="2000">
+			Link copiado com sucesso!
+		</v-snackbar>
 	</div>
 </template>
 
@@ -97,25 +143,60 @@
 		data(){
 			return {
 				ingressos: [],
+				dialogQRCode: false,
+				qrCodeBase64: "",
+				snackbarVisible: false,
 			};
 		},
 
 		created(){
-			this.bucaIngressos();
+			this.buscaIngressos();
 		},
 
 		methods: {
-			async bucaIngressos(){
+			async buscaIngressos(){
 				this.$carregando();
 				buscarIngressosByUser(localStorage.getItem("authuserId"))
 					.then((res) => {
-						this.ingressos = res.data;
+						this.ingressos = res.data.map((ingresso) => {
+							// Formatando a data para o formato "15 de Jan 2025"
+							const data = new Date(ingresso.dateStart);
+							ingresso.dataFormatada = data.toLocaleDateString("pt-BR", {
+								day: "2-digit",
+								month: "short",
+								year: "numeric",
+							}).replace(".", ""); // Remove o ponto que aparece no final do mês abreviado
+
+							// Formatando o startTime para "hora:minuto"
+							const horaMinuto = ingresso.startTime.slice(0, 5); // Pega os primeiros 5 caracteres ("HH:mm")
+							ingresso.horaFormatada = horaMinuto;
+
+							return ingresso;
+						});
 					}).catch((error) => {
 						exibirMensagemErroApi("Erro ao buscar ingressos.");
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
 					});
+			},
+
+			abrirQRCode(qrCodeBase64){
+				this.qrCodeBase64 = qrCodeBase64;
+				this.dialogQRCode = true;
+			},
+
+			// Método para compartilhar o link
+			compartilharLink(eventoId){
+				const link = `http://localhost:8080/central-tiket/evento/${eventoId}`;
+
+				// Copiar o link para a área de transferência
+				navigator.clipboard.writeText(link).then(() => {
+					// Mostrar a mensagem de sucesso após copiar
+					this.snackbarVisible = true;
+				}).catch((error) => {
+					console.error("Erro ao copiar o link:", error);
+				});
 			},
 		},
 	};

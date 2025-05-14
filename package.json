@@ -23,6 +23,7 @@
 		"binlookup": "^2.0.1",
 		"chart.js": "^3.9.1",
 		"core-js": "^3.6.5",
+		"date-fns": "^4.1.0",
 		"element-ui": "^2.15.13",
 		"fortawesome": "0.0.1-security",
 		"jquery": "^3.7.1",
