@@ -1,6 +1,6 @@
 import api, { URLS } from "./api.js";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://vendasingresso.onrender.com";
 
 export const enviarEmail = (dadosFormulario) => api.request({
 	method: "post",

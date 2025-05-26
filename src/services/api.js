@@ -30,29 +30,19 @@ const api = axios.create({
 });
 
 // eslint-disable-next-line consistent-return
-api.interceptors.request.use(async(configRequest) => new Promise((resolve, reject) => {
-	configRequest.headers.put["Content-Type"] = "application/json";
-	configRequest.headers.put["Access-Control-Allow-Origin"] = "*";
-	configRequest.headers.put["Access-Control-Allow-Methods"] = "GET, POST, PATCH, PUT, DELETE, OPTIONS";
-	Vue.$keycloak.updateToken(60)
-		.then(() => {
-			configRequest.headers.common.Authorization = `Bearer ${Vue.$keycloak.token}`;
-			return resolve(configRequest);
-		})
-		// eslint-disable-next-line consistent-return
-		.catch((err) => {
-			console.error(err);
-			if(Vue.$keycloak != null){
-				Vue.$keycloak.login();
-			}
-			else{
-				return reject(err);
-			}
-		});
-}), (error) => {
-	console.error("Erro ao fazer requisição: ", error);
-	return Promise.reject(error);
-});
+api.interceptors.request.use(
+	(configRequest) => {
+		configRequest.headers["Content-Type"] = "application/json";
+		configRequest.headers.Accept = "application/json";
+		configRequest.headers["Access-Control-Allow-Origin"] = "*";
+		configRequest.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, PUT, DELETE, OPTIONS";
+		return configRequest;
+	},
+	(error) => {
+		console.error("Erro ao fazer requisição: ", error);
+		return Promise.reject(error);
+	},
+);
 
 api.defaults.baseURL = config.apis.urls.API_APROVEI;
 // Resposta bem sucedida
