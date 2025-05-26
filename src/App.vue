@@ -1,7 +1,7 @@
 <template>
 	<v-app class="screen-size" :style="{cssColors}">
-		<system-menu v-if="this.$keycloak.authenticated && !isTelaPagamento && isUsuarioCadastrado"/>
-		<PopupDeDivulgacao v-if="this.$keycloak.authenticated && !isTelaPagamento && isUsuarioCadastrado"/>
+		<system-menu v-if="!isTelaPagamento && isUsuarioCadastrado"/>
+		<PopupDeDivulgacao v-if="!isTelaPagamento && isUsuarioCadastrado"/>
 		<v-main :style="vMainStyle">
 			<router-view/>
 		</v-main>

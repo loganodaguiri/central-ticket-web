@@ -34,9 +34,6 @@ api.interceptors.request.use(async(configRequest) => new Promise((resolve, rejec
 	configRequest.headers.put["Content-Type"] = "application/json";
 	configRequest.headers.put["Access-Control-Allow-Origin"] = "*";
 	configRequest.headers.put["Access-Control-Allow-Methods"] = "GET, POST, PATCH, PUT, DELETE, OPTIONS";
-	if(Vue.$keycloak.authenticated == false){
-		return resolve(configRequest);
-	}
 	Vue.$keycloak.updateToken(60)
 		.then(() => {
 			configRequest.headers.common.Authorization = `Bearer ${Vue.$keycloak.token}`;

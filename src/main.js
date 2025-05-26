@@ -25,7 +25,6 @@ import TextField from "@/components/inputs/TextField.vue";
 import ComboBox from "@/components/inputs/ComboBox.vue";
 import ButtonDefault from "@/components/buttons/ButtonDefault.vue";
 import App from "./App.vue";
-import authentication from "./plugins/authentication.js";
 import prototypes from "./plugins/prototypes.js";
 import vuetify from "./plugins/vuetify.js";
 import router from "./router/router.js";
@@ -40,7 +39,6 @@ import "./styles/main.css";
 
 library.add(faUserSecret);
 
-Vue.use(authentication);
 Vue.use(VueDateFns);
 Vue.use(VueApexCharts);
 Vue.use(VueTheMask);
@@ -76,18 +74,11 @@ Vue.prototype.$authToken = tokenSalvo;
 const userIdSalvo = localStorage.getItem("authuserId");
 Vue.prototype.$authuserId = userIdSalvo;
 
-Vue.$keycloak.init({ checkLoginIframe: false }).then((auth) => {
-	if(auth){
-		store.dispatch("usuario/carregarUsuarioLogado");
-	}
-	new Vue({
-		router,
-		store,
-		vuetify,
-		library,
-		FontAwesomeIcon,
-		render: (h) => h(App, { props: { keycloak: Vue.$keycloak } }),
-	}).$mount("#app");
-}).catch(() => {
-	console.error("Failed to authenticate");
-});
+new Vue({
+	router,
+	store,
+	vuetify,
+	library,
+	FontAwesomeIcon,
+	render: (h) => h(App),
+}).$mount("#app");
