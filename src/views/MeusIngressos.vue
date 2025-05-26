@@ -109,12 +109,12 @@
 		<!-- Dialog para exibir QR Code -->
 		<v-dialog v-model="dialogQRCode" max-width="400px">
 			<v-card>
-				<v-card-title class="headline">QR Code</v-card-title>
 				<v-card-text>
 					<v-img :src="qrCodeBase64" max-width="100%" />
 				</v-card-text>
 				<v-card-actions>
-					<v-btn color="primary" @click="dialogQRCode = false">Fechar</v-btn>
+					<v-spacer/>
+					<v-btn color="#EA0763" style="color: white;" @click="dialogQRCode = false">Fechar</v-btn>
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
