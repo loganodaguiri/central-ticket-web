@@ -14,37 +14,70 @@ Vue.use(VueRouter);
 
 const routes = [
 	{
-		path: "/", name: "Index", component: LandingPage, alias: "/", meta: { isAuthenticated: false },
+		path: "/",
+		name: "LandingPage",
+		component: LandingPage,
+		meta: { isAuthenticated: false },
 	},
 	{
-		path: "/contato", name: "Contato", component: Contato, alias: "/", meta: { isAuthenticated: false },
+		path: "/home",
+		name: "Home",
+		component: LandingPage,
+		meta: { isAuthenticated: false },
 	},
 	{
-		path: "/cadastro-evento/:id?", name: "CadastroEvento", component: CadastroEvento, alias: "/", meta: { isAuthenticated: false },
+		path: "/contato",
+		name: "Contato",
+		component: Contato,
+		meta: { isAuthenticated: false },
 	},
 	{
-		path: "/evento/:id?", name: "Evento", component: Evento, alias: "/", meta: { isAuthenticated: false },
+		path: "/cadastro-evento/:id?",
+		name: "CadastroEvento",
+		component: CadastroEvento,
+		meta: { isAuthenticated: false },
 	},
 	{
-		path: "/compra", name: "Evento", component: Compra, alias: "/", meta: { isAuthenticated: false },
+		path: "/evento/:id?",
+		name: "Evento",
+		component: Evento,
+		meta: { isAuthenticated: false },
 	},
 	{
-		path: "/meus-dados", name: "MeusDados", component: MeusDados, alias: "/", meta: { isAuthenticated: false },
+		path: "/compra",
+		name: "Compra",
+		component: Compra,
+		meta: { isAuthenticated: false },
 	},
 	{
-		path: "/meus-ingressos", name: "MeusIngressos", component: MeusIngressos, alias: "/", meta: { isAuthenticated: false },
+		path: "/meus-dados",
+		name: "MeusDados",
+		component: MeusDados,
+		meta: { isAuthenticated: false },
 	},
 	{
-		path: "/meus-eventos", name: "MeusEventos", component: MeusEventos, alias: "/", meta: { isAuthenticated: false },
+		path: "/meus-ingressos",
+		name: "MeusIngressos",
+		component: MeusIngressos,
+		meta: { isAuthenticated: false },
 	},
 	{
-		path: "/dashboard", name: "Dashboard", component: Dashboard, alias: "/", meta: { isAuthenticated: false },
+		path: "/meus-eventos",
+		name: "MeusEventos",
+		component: MeusEventos,
+		meta: { isAuthenticated: false },
+	},
+	{
+		path: "/dashboard",
+		name: "Dashboard",
+		component: Dashboard,
+		meta: { isAuthenticated: false },
 	},
 ];
 
 const router = new VueRouter({
 	mode: "history",
-	base: "/central-tiket/",
+	base: "/", // aqui é importante deixar "/" para funcionar na raiz do domínio
 	routes,
 });
 
