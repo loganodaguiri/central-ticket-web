@@ -103,7 +103,7 @@
 	import AppBar from "@/components/AppBar.vue";
 	import Rodape from "@/components/Rodape.vue";
 	import { bucaUser, editUser } from "@/services/User.js";
-	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 
 	export default {
 		name: "MeusDados",
@@ -142,7 +142,8 @@
 						this.iniciais = this.nome ? this.nome.substring(0, 2).toUpperCase() : "";
 						this.dataNascimento = this.formatarDataParaInputDate(res.data.birth);
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar usuario.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -187,7 +188,8 @@
 						exibirMensagemSucesso("Usuario salvo com sucesso!!!");
 						this.bucaUser();
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao editar usuario.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();

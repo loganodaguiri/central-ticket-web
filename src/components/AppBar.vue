@@ -89,8 +89,8 @@
 			</v-navigation-drawer>
 		</div>
 
-		<v-dialog v-model="showCadastroModal">
-			<v-card style="width: 500px">
+		<v-dialog v-model="showCadastroModal" max-width="500px" content-class="dialog-center">
+			<v-card>
 				<v-card-title class="headline">Cadastro</v-card-title>
 				<v-card-text>
 					<v-text-field label="Nome" v-model="cadastroForm.name" />
@@ -108,15 +108,15 @@
 			</v-card>
 		</v-dialog>
 
-		<v-dialog v-model="showLoginModal">
-			<v-card style="width: 500px">
+		<v-dialog v-model="showLoginModal" max-width="500px" content-class="dialog-center">
+			<v-card>
 				<v-card-title class="headline">Login</v-card-title>
 				<v-card-text>
 					<v-text-field label="Email" v-model="loginForm.email" type="email" />
 					<v-text-field label="Senha" v-model="loginForm.password" type="password" />
 				</v-card-text>
 				<v-card-actions>
-					<v-spacer/>
+					<v-spacer />
 					<v-btn text @click="showLoginModal = false">Cancelar</v-btn>
 					<v-btn color="primary" @click="loginUsuario">Fazer Login</v-btn>
 				</v-card-actions>
@@ -129,7 +129,7 @@
 
 	import Vue from "vue";
 	import LogoHorizontal from "@/assets/logo-horizontal.png";
-	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemSucesso } from "@/util/MessageUtils.js";
 	import { cadastroUsuario, loginUsuario } from "@/services/User.js";
 
 	export default {
@@ -281,7 +281,8 @@
 						exibirMensagemSucesso("Usuario Cadastrado com sucesso");
 						this.showCadastroModal = false;
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao cadastrar o usuario. Tente novamente mais tarde.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -303,7 +304,8 @@
 						window.location.reload();
 						this.showLoginModal = false;
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao fazer login.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -334,6 +336,13 @@
 	.navbar::v-deep .v-tabs .v-tab{
     padding: 0 25px;
 		color:var(--azul)!important;
+	}
+
+	.dialog-center {
+		display: flex !important;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
 	}
 
 </style>

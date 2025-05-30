@@ -90,7 +90,7 @@
 	import Vue from "vue";
 	import LogoHorizontal from "@/assets/logo-horizontal.png";
 	import AppBar from "@/components/AppBar.vue";
-	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemSucesso } from "@/util/MessageUtils.js";
 	import { buscaCep } from "@/services/ViaCepService.js";
 	import { criarCompra, finalizarCompra } from "@/services/ComprarService.js";
 	import Rodape from "@/components/Rodape.vue";
@@ -167,7 +167,8 @@
 						this.dadosCartao.endereco.municipio = res.data.localidade;
 						this.dadosCartao.endereco.uf = res.data.uf;
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar endereço.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -182,7 +183,8 @@
 						this.telefone = res.data.phone;
 						this.aniversario = res.data.birth;
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar usuario.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -204,7 +206,8 @@
 						this.finalizarCompra();
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao criar compra.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -238,7 +241,8 @@
 						exibirMensagemSucesso("Compra realizada com sucesso");
 						this.$router.push("/meus-ingressos");
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao finalizar compra.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();

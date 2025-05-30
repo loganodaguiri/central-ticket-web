@@ -54,7 +54,7 @@
 </template>
 
 <script>
-	import { exibirMensagemErroApi } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro } from "@/util/MessageUtils.js";
 	import { buscarEventosDestaque } from "@/services/EventoService.js";
 
 	export default {
@@ -76,8 +76,9 @@
 						this.eventos = res.data;
 						this.groupEvents();
 					})
-					.catch(() => {
-						exibirMensagemErroApi("Erro ao buscar eventos destaque.");
+					.catch((error) => {
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();

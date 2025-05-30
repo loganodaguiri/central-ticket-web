@@ -130,7 +130,7 @@
 	import AppBar from "@/components/AppBar.vue";
 	import Rodape from "@/components/Rodape.vue";
 	import { buscarIngressosByUser } from "@/services/ComprarService.js";
-	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 
 	export default {
 		name: "MeusIngressos",
@@ -174,7 +174,8 @@
 							return ingresso;
 						});
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar ingressos.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();

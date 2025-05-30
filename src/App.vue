@@ -11,7 +11,7 @@
 
 <script>
 	import GlobalLoader from "@/components/GlobalLoader.vue";
-	import { exibirMensagemErroApi, exibirMensagemInfo } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemInfo } from "@/util/MessageUtils.js";
 
 	export default {
 		name: "App",

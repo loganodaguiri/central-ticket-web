@@ -442,7 +442,7 @@
 <script>
 	import Vue from "vue";
 	import LogoHorizontal from "@/assets/logo-horizontal.png";
-	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemSucesso } from "@/util/MessageUtils.js";
 	import { buscaCep } from "@/services/ViaCepService.js";
 	import { cadastroLocal, editarLocal } from "@/services/LocalService.js";
 	import { cadastroProdutor, edicaoProdutor } from "@/services/ProdutorService.js";
@@ -564,7 +564,8 @@
 						this.localId = res.data.house.house_id;
 						this.produtorId = res.data.producer.produtor_id;
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar evento.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -591,7 +592,8 @@
 						}));
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar ingressos.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -631,7 +633,8 @@
 						this.cidade = res.data.localidade;
 						this.estado = res.data.uf;
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar endereço.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -672,8 +675,9 @@
 						}
 						return this.salvarProdutor();
 					})
-					.catch(() => {
-						exibirMensagemErroApi("Erro ao salvar local.");
+					.catch((error) => {
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -699,8 +703,8 @@
 						this.salvarEvento2();
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao cadastrar produtor.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -742,8 +746,8 @@
 						this.salvarIngresso();
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao cadastrar evento.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -849,8 +853,8 @@
 							exibirMensagemSucesso("Evento e ingressos cadastrados com sucesso!", res);
 						})
 						.catch((error) => {
-							exibirMensagemErroApi("Erro ao cadastrar ingresso.");
-							console.error(error);
+							const msg =	error?.response?.data?.msg;
+							exibirMensagemErro(msg);
 						});
 				}
 
@@ -861,8 +865,8 @@
 							exibirMensagemSucesso("Evento e ingressos atualizados com sucesso!", res);
 						})
 						.catch((error) => {
-							exibirMensagemErroApi("Erro ao atualizar ingresso.");
-							console.error(error);
+							const msg =	error?.response?.data?.msg;
+							exibirMensagemErro(msg);
 						});
 				}
 

@@ -170,7 +170,7 @@
 <script>
 	import Rodape from "@/components/Rodape.vue";
 	import AppBar from "@/components/AppBar.vue";
-	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemSucesso } from "@/util/MessageUtils.js";
 	import {
 		busacarQuantidadeIngresso, busacarQuantidadeEventosAtivos, busacarReceitaGerada, busacarTotalArrecadadoPorEvento, busacarArrecadacoMensal, busacarPercentualVendaIngressos, busacarProximosEventos,
 		busacarQuantidadeEventos, participantesPorEvento, participantesPorMes,
@@ -361,8 +361,8 @@
 						this.ingressosVendidos = res.data.total_ingressos_vendidos;
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar quantidade de ingressos vendidas.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -376,8 +376,8 @@
 						this.totalEventosAtivos = res.data.totalEventosAtivos;
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar quantidade de eventos ativos vendidas.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -391,8 +391,8 @@
 						this.totalEventos = res.data.totalEventos;
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar quantidade de eventos.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -406,8 +406,8 @@
 						this.receitaGerada = res.data.totalArrecadado;
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar a receita gerada.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -463,8 +463,8 @@
 						this.receitaGerada2 = eventos.reduce((total, e) => total + e.receita_total, 0); // Ajustando para receita_total
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar a receita gerada.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -508,8 +508,8 @@
 						this.receitaGerada2 = valores.reduce((acc, v) => acc + v, 0);
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar a receita gerada.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -544,8 +544,8 @@
 						};
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar a receita gerada.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -574,8 +574,8 @@
 						});
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar próximos eventos.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -623,8 +623,8 @@
 						};
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar os participantes por evento.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -706,8 +706,8 @@
 						this.totalParticipantesAno = participantesFiltrados.reduce((acc, v) => acc + v, 0);
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar os participantes.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();

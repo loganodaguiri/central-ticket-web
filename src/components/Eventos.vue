@@ -16,7 +16,7 @@
 </template>
 
 <script>
-	import { exibirMensagemErroApi } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro } from "@/util/MessageUtils.js";
 	import { buscarEventoByIdUser } from "@/services/EventoService.js";
 
 	export default {
@@ -43,8 +43,8 @@
 						}));
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Não foi possível carregar os eventos! Tente novamente mais tarde.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					});
 			},
 			clean(){

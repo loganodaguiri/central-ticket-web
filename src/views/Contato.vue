@@ -72,7 +72,7 @@
 <script>
 	import Vue from "vue";
 	import LogoHorizontal from "@/assets/logo-horizontal.png";
-	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemSucesso } from "@/util/MessageUtils.js";
 	import { enviarEmail } from "@/services/ContatoService.js";
 	import Rodape from "@/components/Rodape.vue";
 	import AppBar from "@/components/AppBar.vue";
@@ -115,7 +115,8 @@
 					})
 					.catch((error) => {
 						console.error(error);
-						exibirMensagemErroApi("Erro ao enviar mensagem.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();

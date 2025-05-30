@@ -36,7 +36,7 @@
 	import AppBar from "@/components/AppBar.vue";
 	import Rodape from "@/components/Rodape.vue";
 	import { buscarEventoByIdUser, apagarEvento } from "@/services/EventoService.js";
-	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 
 	export default {
 		name: "MeusEventos",
@@ -63,7 +63,8 @@
 					.then((res) => {
 						this.eventos = res.data;
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar eventos.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -88,7 +89,8 @@
 					.then((res) => {
 						this.buscarEventos();
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao excluir o evento.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();

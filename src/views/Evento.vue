@@ -109,7 +109,7 @@
 <script>
 	import Vue from "vue";
 	import LogoHorizontal from "@/assets/logo-horizontal.png";
-	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 	import AppBar from "@/components/AppBar.vue";
 	import { buscarEventoById } from "@/services/EventoService.js";
 	import Rodape from "@/components/Rodape.vue";
@@ -182,8 +182,9 @@
 							this.longitude = parseFloat(resultado[0].lon);
 						}
 					})
-					.catch(() => {
-						exibirMensagemErroApi("Erro ao buscar evento.");
+					.catch((error) => {
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
@@ -203,8 +204,8 @@
 						}));
 					})
 					.catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar ingressos.");
-						console.error(error);
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();

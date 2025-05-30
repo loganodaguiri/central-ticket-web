@@ -78,7 +78,7 @@
 	import DepoimentosNovosCarrossel from "@/components/landing/LandingPageFev2024/DepoimentosNovosCarrossel.vue";
 	import AppBar from "@/components/AppBar.vue";
 	import Rodape from "@/components/Rodape.vue";
-	import { exibirMensagemErroApi, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
+	import { exibirMensagemErro, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
 	import { buscarEventos } from "@/services/EventoService.js";
 
 	export default {
@@ -116,7 +116,8 @@
 					.then((res) => {
 						this.ingressos = res.data;
 					}).catch((error) => {
-						exibirMensagemErroApi("Erro ao buscar eventos.");
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
 					})
 					.finally(() => {
 						this.$finalizarCarregando();
