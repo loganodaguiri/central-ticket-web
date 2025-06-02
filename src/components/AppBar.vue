@@ -255,6 +255,7 @@
 			},
 
 			fazerLogout(){
+				this.$router.push("/");
 				this.$authToken = null;
 				localStorage.removeItem("authToken");
 				window.location.reload();
