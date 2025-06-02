@@ -34,3 +34,13 @@ export const editarIngresso = (ingressoData) => api.request({
 		Authorization: `Bearer ${token}`,
 	},
 });
+
+export const excluirIngresso = (id) => api.request({
+	method: "delete",
+	baseURL: BASE_URL,
+	url: `/ingresso/delete/${id}`,
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: `Bearer ${token}`,
+	},
+});

@@ -449,7 +449,9 @@
 	import { cadastroEvento, buscarEventoById, editarEvento } from "@/services/EventoService.js";
 	import { VueEditor } from "vue2-editor";
 	import Rodape from "@/components/Rodape.vue";
-	import { cadastroIngrsso, buscaIngresoByIdEvento, editarIngresso } from "@/services/IngressoService.js";
+	import {
+		cadastroIngrsso, buscaIngresoByIdEvento, editarIngresso, excluirIngresso,
+	} from "@/services/IngressoService.js";
 	import AppBar from "@/components/AppBar.vue";
 	import { faL } from "@fortawesome/free-solid-svg-icons";
 
@@ -622,6 +624,21 @@
 				this.indiceEdicaoIngresso = index;
 				this.modalModoEdicao = true; // ESSA LINHA É ESSENCIAL
 				this.showModalIngresso = true;
+			},
+
+			excluirIngresso(index){
+				this.$carregando();
+				const ingresso = this.ingressos[index];
+				excluirIngresso(ingresso.ingresso_id)
+					.then((res) => {
+						this.buscarIngressosByIdEvento();
+					}).catch((error) => {
+						const msg =	error?.response?.data?.msg;
+						exibirMensagemErro(msg);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
 			},
 
 			async buscarEndereco(){
