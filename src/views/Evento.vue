@@ -93,7 +93,7 @@
 				</div>
 				<div class="total-container">
 					<h3>Total: R$ {{ total.toFixed(2) }}</h3>
-					<button class="btn-comprar" @click="buyTickets">
+					<button class="btn-comprar" @click="buyTickets" :disabled="total === 0">
 						Comprar
 					</button>
 				</div>
@@ -114,7 +114,6 @@
 	import { buscarEventoById } from "@/services/EventoService.js";
 	import Rodape from "@/components/Rodape.vue";
 	import { buscaIngresoByIdEvento } from "@/services/IngressoService.js";
-	import { criarCompra } from "@/services/ComprarService.js";
 
 	export default {
 		name: "Evento",
@@ -239,42 +238,11 @@
 							valor: i.valor,
 						}));
 
-					if(ingressosSelecionados.length === 0){
-						exibirMensagemAtencao("Selecione ao menos um ingresso.");
-						return;
-					}
+					// Salva no localStorage
+					localStorage.setItem("ingressosSelecionados", JSON.stringify(ingressosSelecionados));
 
-					// Verifica se todos os ingressos são gratuitos
-					const todosSaoGratuitos = ingressosSelecionados.every((i) => i.valor === 0);
-
-					if(todosSaoGratuitos){
-						// Monta o formulário para compra gratuita
-						const compraFormulario = {
-							usuario_id: localStorage.getItem("authuserId"),
-							itens: ingressosSelecionados,
-						};
-
-						this.$carregando();
-
-						criarCompra(compraFormulario)
-							.then((res) => {
-								this.idCompra = res.data.compra.compra_id;
-								localStorage.removeItem("ingressosSelecionados");
-								this.finalizarCompra(); // ex: mostrar mensagem de sucesso ou redirecionar
-							})
-							.catch((error) => {
-								const msg = error?.response?.data?.msg || "Erro ao finalizar compra.";
-								exibirMensagemErro(msg);
-							})
-							.finally(() => {
-								this.$finalizarCarregando();
-							});
-					}
-					else{
-						// Caso tenha ingresso com valor, redireciona para fluxo de pagamento
-						localStorage.setItem("ingressosSelecionados", JSON.stringify(ingressosSelecionados));
-						this.$router.push("/compra");
-					}
+					// Redireciona
+					this.$router.push("/compra");
 				}
 			},
 		},
