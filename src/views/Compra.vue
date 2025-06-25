@@ -18,7 +18,7 @@
 						<v-text-field v-model="dadosCartao.nome" label="Nome no cartão" class="custom-file-input" />
 					</v-col>
 					<v-col cols="12" sm="6">
-						<v-text-field v-model="dadosCartao.cpf" label="CPF do titular" class="custom-file-input" />
+						<v-text-field v-mask="'###.###.###-##'" v-model="dadosCartao.cpf" label="CPF do titular" class="custom-file-input" />
 					</v-col>
 					<v-col cols="12" sm="8">
 						<v-text-field v-model="numeroCartao" @input="buscarBandeira(numeroCartao)" label="Número do cartão" class="custom-file-input" />
@@ -29,10 +29,10 @@
 					<v-col cols="12" sm="4">
 						<v-text-field
 							v-model="dadosCartao.validade"
-							label="Validade (MM/AAAA)"
+							label="Validade (MM/AA)"
 							class="custom-file-input"
-							placeholder="MM/AAAA"
-							v-mask="'##/####'"
+							placeholder="MM/AA"
+							v-mask="'##/##'"
 							maxlength="7"
 							persistent-hint
 							dense
@@ -54,7 +54,13 @@
 				<h2 class="form-section-title mb-6">Endereço de cobrança</h2>
 				<v-row dense>
 					<v-col cols="12" md="4">
-						<v-text-field v-model="dadosCartao.endereco.cep" label="CEP" :rules="[v => !!v || 'Campo obrigatório']" required class="custom-file-input" />
+						<v-text-field
+							v-mask="'#####-###'"
+							v-model="dadosCartao.endereco.cep"
+							label="CEP"
+							:rules="[v => !!v || 'Campo obrigatório']"
+							required
+							class="custom-file-input" />
 					</v-col>
 					<v-col cols="12" md="8">
 						<v-text-field v-model="dadosCartao.endereco.logradouro" label="Av./Rua" disabled class="custom-file-input" />
@@ -221,7 +227,7 @@
 					email: this.email, // ajuste conforme onde você armazena o e-mail
 					phone: this.telefone, // ajuste conforme onde você armazena o telefone
 					birth: this.aniversario, // deve estar no formato YYYY-MM-DD
-					cpf: this.dadosCartao.cpf,
+					cpf: this.dadosCartao.cpf.replace(/\D/g, ""),
 					method: this.formaPagamento === "CARTAO_CREDITO" ? "credit_card" : "pix",
 					card_number: this.numeroCartao,
 					card_cvv: this.dadosCartao.cvv,
@@ -234,7 +240,7 @@
 					neighborhood: this.dadosCartao.endereco.bairro,
 					street: `${this.dadosCartao.endereco.logradouro}`.trim(),
 					street_number: this.dadosCartao.endereco.numeroLogradouro,
-					zipcode: this.dadosCartao.endereco.cep,
+					zipcode: this.dadosCartao.endereco.cep.replace(/\D/g, ""),
 				};
 				finalizarCompra(payload, this.idCompra)
 					.then((res) => {

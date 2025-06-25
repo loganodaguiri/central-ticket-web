@@ -97,7 +97,7 @@
 					<v-text-field label="Email" v-model="cadastroForm.email" type="email" />
 					<v-text-field label="Senha" v-model="cadastroForm.password" type="password" />
 					<v-text-field label="Confirmar Senha" v-model="cadastroForm.confirmPassword" type="password" />
-					<v-text-field label="Telefone" v-model="cadastroForm.phone" />
+					<v-text-field v-mask="'(##) #####-####'" label="Telefone" v-model="cadastroForm.phone" />
 					<v-text-field label="Data de Nascimento" v-model="cadastroForm.birth" type="date" />
 				</v-card-text>
 				<v-card-actions>
@@ -277,12 +277,16 @@
 
 			cadastroUsuario(){
 				this.$carregando();
-				cadastroUsuario(this.cadastroForm)
+				const formParaEnvio = { ...this.cadastroForm };
+				formParaEnvio.phone = formParaEnvio.phone.replace(/\D/g, "");
+
+				cadastroUsuario(formParaEnvio)
 					.then((res) => {
-						exibirMensagemSucesso("Usuario Cadastrado com sucesso");
+						exibirMensagemSucesso("Usuário cadastrado com sucesso");
 						this.showCadastroModal = false;
-					}).catch((error) => {
-						const msg =	error?.response?.data?.msg;
+					})
+					.catch((error) => {
+						const msg = error?.response?.data?.msg;
 						exibirMensagemErro(msg);
 					})
 					.finally(() => {

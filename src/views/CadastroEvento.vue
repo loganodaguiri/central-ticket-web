@@ -140,6 +140,7 @@
 											<v-text-field
 												v-model="cep"
 												label="CEP"
+												v-mask="'#####-###'"
 												:rules="[v => !!v || 'Campo obrigatório']"
 												required
 												/>
@@ -403,6 +404,7 @@
 										label="Quantidade mínima por compra *"
 										v-model="formIngressoPago.minima"
 										type="number"
+										:min="0"
 										required
 										/>
 								</v-col>
@@ -411,6 +413,7 @@
 									<v-text-field
 										label="Quantidade máxima por compra *"
 										v-model="formIngressoPago.maxima"
+										:min="0"
 										type="number"
 										required
 										/>
@@ -432,7 +435,7 @@
 				<v-card-actions>
 					<v-spacer />
 					<v-btn text @click="fecharModalIngresso()">CANCELAR</v-btn>
-					<v-btn color="orange" dark @click="salvarIngressos()">SALVAR INGRESSO</v-btn>
+					<v-btn color="#EA0763" dark @click="salvarIngressos()">SALVAR INGRESSO</v-btn>
 				</v-card-actions>
 			</v-card>
 		</v-dialog>
@@ -675,7 +678,7 @@
 					address: this.rua,
 					city: this.cidade,
 					state: this.estado,
-					zip_code: this.cep,
+					zip_code: this.cep.replace(/\D/g, ""),
 					website: "https://www.youtube.com/",
 					number: this.numero,
 					complemento: this.complemento,

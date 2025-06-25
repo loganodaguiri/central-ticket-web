@@ -134,7 +134,7 @@
 
 						<!-- Botão embaixo da lista, ocupando toda a largura -->
 						<div class="evento-cadastro-wrapper">
-							<button class="evento-cadastro-btn">VER TODOS EVENTOS</button>
+							<button class="evento-cadastro-btn" @click="IrParaMeusEventos()">VER TODOS EVENTOS</button>
 						</div>
 					</div>
 
@@ -367,6 +367,10 @@
 					.finally(() => {
 						this.$finalizarCarregando();
 					});
+			},
+
+			IrParaMeusEventos(){
+				this.$router.push("/meus-eventos");
 			},
 
 			busacarQuantidadeEventosAtivos(){

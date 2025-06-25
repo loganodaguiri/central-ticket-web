@@ -189,7 +189,7 @@
 
 			// Método para compartilhar o link
 			compartilharLink(eventoId){
-				const link = `http://localhost:8080/central-tiket/evento/${eventoId}`;
+				const link = `https://central-ticket-web.vercel.app/evento/${eventoId}`;
 
 				// Copiar o link para a área de transferência
 				navigator.clipboard.writeText(link).then(() => {

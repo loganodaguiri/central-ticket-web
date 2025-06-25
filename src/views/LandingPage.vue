@@ -15,7 +15,7 @@
 					Adequando soluções ao evento que você precisa
 				</p>
 				<a class="banner-botao primeiro-botao">
-					<button @click="cadastroEvento">CADSTRE SEU EVENTO</button>
+					<button @click="cadastroEvento">CADASTRE SEU EVENTO</button>
 				</a>
 			</div>
 		</div>
