@@ -169,7 +169,7 @@
 							month: "long",
 							year: "numeric",
 						}).format(data);
-						this.eventoPeriodo = `${res.data.startTime.slice(0, 5)} - ${res.data.endTime.slice(0, 5)}`;
+						this.eventoPerido = `${res.data.startTime.slice(0, 5)} - ${res.data.endTime.slice(0, 5)}`;
 						this.eventoLocal = `${res.data.house.name}, ${res.data.house.city} - ${res.data.house.state}`;
 						this.evento = res.data;
 
