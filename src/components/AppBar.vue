@@ -20,6 +20,7 @@
 				contain
 				height="100%"
 				max-width="185"
+				@click="IrParaHome()"
 				:src="LogoHorizontal" />
 			<v-spacer/>
 			<v-tabs
@@ -273,6 +274,10 @@
 
 			togglePerfilDropdown(){
 				this.mostrarPerfilDropdown = !this.mostrarPerfilDropdown;
+			},
+
+			IrParaHome(){
+				this.$router.push("/");
 			},
 
 			cadastroUsuario(){

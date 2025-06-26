@@ -871,6 +871,7 @@
 					Promise.all(ingressosCriacao.map((ingresso) => cadastroIngrsso(ingresso)))
 						.then((res) => {
 							exibirMensagemSucesso("Evento e ingressos cadastrados com sucesso!", res);
+							this.$router.push("/");
 						})
 						.catch((error) => {
 							const msg =	error?.response?.data?.msg;
@@ -883,6 +884,7 @@
 					Promise.all(ingressosEdicao.map((ingresso) => editarIngresso(ingresso)))
 						.then((res) => {
 							exibirMensagemSucesso("Evento e ingressos atualizados com sucesso!", res);
+							this.$router.push("/");
 						})
 						.catch((error) => {
 							const msg =	error?.response?.data?.msg;
