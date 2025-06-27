@@ -147,15 +147,6 @@
 							:series="lineSeries"
 							/>
 					</div>
-					<!-- Gráfico de Participantes por Mês -->
-					<div class="grafico-linha" style="flex: 1;">
-						<apexchart
-							:options="participantesOptions"
-							:series="participantesSeries"
-							type="line"
-							height="350"
-							/>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -336,7 +327,6 @@
 				this.busacarArrecadacoMensal();
 				this.busacarPercentualVendaIngressos();
 				this.participantesPorEvento();
-				this.participantesPorMes();
 			},
 		},
 
@@ -350,7 +340,6 @@
 			this.busacarProximosEventos();
 			this.busacarQuantidadeEventos();
 			this.participantesPorEvento();
-			this.participantesPorMes();
 		},
 
 		methods: {
@@ -625,89 +614,6 @@
 								},
 							},
 						};
-					})
-					.catch((error) => {
-						const msg =	error?.response?.data?.msg;
-						exibirMensagemErro(msg);
-					})
-					.finally(() => {
-						this.$finalizarCarregando();
-					});
-			},
-
-			participantesPorMes(){
-				this.$carregando();
-
-				participantesPorMes(localStorage.getItem("authuserId"), this.idEvento)
-					.then((res) => {
-						const dados = res.data;
-
-						// Mapeamento dos meses em inglês para abreviações em português
-						const mesTraducaoAbreviado = {
-							January: "Jan",
-							February: "Fev",
-							March: "Mar",
-							April: "Abr",
-							May: "Mai",
-							June: "Jun",
-							July: "Jul",
-							August: "Ago",
-							September: "Set",
-							October: "Out",
-							November: "Nov",
-							December: "Dez",
-						};
-
-						// Ordem correta dos meses para ordenação
-						const ordemMeses = [
-							"January", "February", "March", "April", "May", "June",
-							"July", "August", "September", "October", "November", "December",
-						];
-
-						// Ordena os dados com base na ordem dos meses
-						const dadosOrdenados = dados.sort(
-							(a, b) => ordemMeses.indexOf(a.nome_mes) - ordemMeses.indexOf(b.nome_mes),
-						);
-
-						// Obtém o índice do mês atual (0 = Janeiro, 11 = Dezembro)
-						const mesAtualIndex = new Date().getMonth();
-
-						// Converte os nomes dos meses para abreviações em português
-						const mesesAbreviados = dadosOrdenados.map((item) => mesTraducaoAbreviado[item.nome_mes] || item.nome_mes);
-
-						// Extrai os valores de participantes (garantindo que sejam números)
-						const participantes = dadosOrdenados.map((item) => Number(item.total_participantes));
-
-						// Corta os arrays até o mês atual (inclusive)
-						const mesesFiltrados = mesesAbreviados.slice(0, mesAtualIndex + 1);
-						const participantesFiltrados = participantes.slice(0, mesAtualIndex + 1);
-
-						// Atualiza o gráfico de linhas
-						this.participantesSeries = [
-							{
-								name: "Participantes",
-								data: participantesFiltrados,
-							},
-						];
-
-						this.participantesOptions = {
-							chart: {
-								type: "line",
-							},
-							xaxis: {
-								categories: mesesFiltrados,
-							},
-							title: {
-								text: "Participantes por Mês",
-								align: "left",
-								style: {
-									fontSize: "16px",
-								},
-							},
-						};
-
-						// Participantes totais do ano até o mês atual
-						this.totalParticipantesAno = participantesFiltrados.reduce((acc, v) => acc + v, 0);
 					})
 					.catch((error) => {
 						const msg =	error?.response?.data?.msg;
