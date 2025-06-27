@@ -28,6 +28,18 @@
 		<div id="secao-baloes-depoimentos">
 			<p id="titulo-branco-grande" class="d-flex justify-content-center text-center">INGRESSOS DISPONÍVEIS</p>
 			<v-container>
+				<v-text-field
+					v-model="nomeBusca"
+					label="Buscar evento"
+					@input="buscarEventosNome"
+					clearable
+					solo
+					prepend-inner-icon="mdi-magnify"
+					hide-details
+					rounded
+					class="mt-4 mb-4 px-2"
+					color="primary"
+					/>
 				<v-row justify="center" align="stretch" dense>
 					<v-col
 						v-for="(ingresso, index) in ingressos"
@@ -79,7 +91,7 @@
 	import AppBar from "@/components/AppBar.vue";
 	import Rodape from "@/components/Rodape.vue";
 	import { exibirMensagemErro, exibirMensagemSucesso, exibirMensagemAtencao } from "@/util/MessageUtils.js";
-	import { buscarEventos } from "@/services/EventoService.js";
+	import { buscarEventos, buscarEventosNome } from "@/services/EventoService.js";
 
 	export default {
 		name: "LandingPage",
@@ -97,6 +109,7 @@
 				LogoHorizontal,
 				ingressos: [],
 				tokenLogando: null,
+				nomeBusca: "",
 			};
 		},
 		methods: {
@@ -118,6 +131,24 @@
 					}).catch((error) => {
 						const msg =	error?.response?.data?.msg;
 						exibirMensagemErro(msg);
+					})
+					.finally(() => {
+						this.$finalizarCarregando();
+					});
+			},
+
+			buscarEventosNome(){
+				this.$carregando();
+
+				// Converte string vazia para null
+				const nome = this.nomeBusca?.trim() || null;
+
+				buscarEventosNome(nome)
+					.then((res) => {
+						this.ingressos = res.data;
+					})
+					.catch((error) => {
+						const msg = error?.response?.data?.msg || "Erro ao buscar eventos.";
 					})
 					.finally(() => {
 						this.$finalizarCarregando();

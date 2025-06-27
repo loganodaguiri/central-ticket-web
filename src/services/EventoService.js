@@ -58,3 +58,9 @@ export const buscarEventosDestaque = (id) => api.request({
 	baseURL: BASE_URL,
 	url: "event/eventDestaque",
 });
+
+export const buscarEventosNome = (nome) => api.request({
+	method: "get",
+	baseURL: BASE_URL,
+	url: `/event/search/${encodeURIComponent(nome)}`,
+});
